@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { getCars } from '../../api/cars'
 import { getActiveSlab } from '../../api/slabs'
-import { upsertSale } from '../../api/sales'
+import { getSales, upsertSale } from '../../api/sales'
 import IncentiveTracker from '../../components/IncentiveTracker'
 import Navbar from '../../components/Navbar'
 import { calculateIncentive } from '../../lib/calculateIncentive'
@@ -32,10 +32,33 @@ const SalesEntry = () => {
         (a: SlabTier, b: SlabTier) => a.sort_order - b.sort_order
       )
       setTiers(sorted)
+
+      const existingSales = await getSales(month, year)
+      const existingMap: Record<string, number> = {}
+      if (Array.isArray(existingSales)) {
+        existingSales.forEach((entry: any) => {
+          existingMap[entry.car_model_id] = entry.units_sold
+        })
+      }
+      setSalesMap(existingMap)
     }
 
     void loadData()
   }, [])
+
+  useEffect(() => {
+    const loadSales = async () => {
+      const existingSales = await getSales(month, year)
+      const existingMap: Record<string, number> = {}
+      if (Array.isArray(existingSales)) {
+        existingSales.forEach((entry: any) => {
+          existingMap[entry.car_model_id] = entry.units_sold
+        })
+      }
+      setSalesMap(existingMap)
+    }
+    void loadSales()
+  }, [month, year])
 
   const totalCars = useMemo(() => Object.values(salesMap).reduce((sum, value) => sum + Number(value || 0), 0), [salesMap])
   const { tier: activeTier, payout } = useMemo(() => calculateIncentive(totalCars, tiers), [totalCars, tiers])
