@@ -129,6 +129,27 @@ const deleteTier = async (req, res) => {
   return success(res, { message: 'Tier deleted successfully' })
 }
 
+const deleteSlab = async (req, res) => {
+  const { id } = req.params
+
+  // Delete all tiers first (cascade will handle this, but explicit deletion is safer)
+  const { error: tiersError } = await supabase
+    .from('slab_tiers')
+    .delete()
+    .eq('slab_config_id', id)
+
+  if (tiersError) return fail(res, tiersError.message)
+
+  // Then delete the slab
+  const { error } = await supabase
+    .from('slab_configs')
+    .delete()
+    .eq('id', id)
+
+  if (error) return fail(res, error.message)
+  return success(res, { message: 'Slab deleted successfully' })
+}
+
 module.exports = { 
   getSlabs, 
   getActiveSlab, 
@@ -137,5 +158,6 @@ module.exports = {
   activateSlab, 
   updateSlab, 
   updateTier, 
-  deleteTier 
+  deleteTier,
+  deleteSlab
 }

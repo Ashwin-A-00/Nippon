@@ -48,3 +48,15 @@ export const deleteTier = async (tierId: string) => {
     throw new Error('Failed to delete tier')
   }
 }
+
+export const deleteSlab = async (slabId: string) => {
+  try {
+    const response = await apiClient.delete(`/slabs/${slabId}`)
+    return response.data.data
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(`Failed to delete slab: ${error.message}`)
+    }
+    throw new Error('Failed to delete slab')
+  }
+}

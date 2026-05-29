@@ -1,11 +1,11 @@
 import { FormEvent, useEffect, useState } from 'react'
-import { activateSlab, addTier, createSlab, getSlabs, updateTier, deleteTier } from '../../api/slabs'
+import { activateSlab, addTier, createSlab, getSlabs, updateTier, deleteTier, deleteSlab } from '../../api/slabs'
 import type { SlabConfig, SlabTier } from '../../types'
 import Sidebar from '../../components/Sidebar'
 import SlabTable from '../../components/SlabTable'
 import ErrorBanner from '../../components/ErrorBanner'
 import { FullPageLoader } from '../../components/LoadingSpinner'
-import { Plus } from 'lucide-react'
+import { Plus, Trash2 } from 'lucide-react'
 
 const inputClass =
   'w-full rounded-xl border border-white/[0.08] bg-[#1A1A1A] px-4 py-3 text-sm text-white outline-none transition-all focus:border-[#DC1428] focus:ring-2 focus:ring-[#DC1428]/20'
@@ -19,6 +19,7 @@ const SlabManager = () => {
   const [error, setError] = useState('')
   const [editingTierId, setEditingTierId] = useState<string | null>(null)
   const [deletingTierId, setDeletingTierId] = useState<string | null>(null)
+  const [deletingSlabId, setDeletingSlabId] = useState<string | null>(null)
   const [tierForms, setTierForms] = useState<
     Record<string, { min_cars: string; max_cars: string; incentive_per_car: string; sort_order: string }>
   >({})
@@ -131,6 +132,23 @@ const SlabManager = () => {
     }
   }
 
+  const handleDeleteSlab = async (slabId: string) => {
+    const confirmed = window.confirm('Delete this slab and all its tiers?')
+    if (!confirmed) return
+
+    try {
+      setError('')
+      setDeletingSlabId(slabId)
+      await deleteSlab(slabId)
+      await fetchSlabs()
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to delete slab'
+      setError(message)
+    } finally {
+      setDeletingSlabId(null)
+    }
+  }
+
   const getFormattedDate = (dateString?: string) => {
     if (!dateString) return 'Date unknown'
     const date = new Date(dateString)
@@ -239,6 +257,17 @@ const SlabManager = () => {
                         Activate
                       </button>
                     )}
+                    <button
+                      onClick={() => handleDeleteSlab(slab.id)}
+                      disabled={deletingSlabId === slab.id}
+                      className="text-[#888888] transition-colors hover:text-[#DC1428] disabled:opacity-50 disabled:cursor-not-allowed"
+                      aria-label="Delete slab"
+                    >
+                      <Trash2
+                        size={18}
+                        className={deletingSlabId === slab.id ? 'animate-pulse' : ''}
+                      />
+                    </button>
                   </div>
                 </div>
 
