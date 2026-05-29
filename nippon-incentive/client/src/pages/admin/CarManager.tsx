@@ -1,9 +1,10 @@
 import { FormEvent, useEffect, useState } from 'react'
-import { addCar, deleteCar, getCars } from '../../api/cars'
+import { addCar, deleteCar, getCars, updateCar } from '../../api/cars'
 import type { CarModel } from '../../types'
 import Sidebar from '../../components/Sidebar'
 import { FullPageLoader } from '../../components/LoadingSpinner'
-import { Car, Plus, Trash2 } from 'lucide-react'
+import ErrorBanner from '../../components/ErrorBanner'
+import { Car, Plus, Trash2, Edit2 } from 'lucide-react'
 
 const inputClass =
   'w-full rounded-xl border border-white/[0.08] bg-[#1A1A1A] px-4 py-3 text-sm text-white outline-none transition-all focus:border-[#DC1428] focus:ring-2 focus:ring-[#DC1428]/20'
@@ -15,13 +16,17 @@ const CarManager = () => {
   const [modelName, setModelName] = useState('')
   const [baseSuffix, setBaseSuffix] = useState('')
   const [variant, setVariant] = useState('')
+  const [error, setError] = useState('')
+  const [deletingId, setDeletingId] = useState<string | null>(null)
+  const [editingId, setEditingId] = useState<string | null>(null)
 
   const fetchCars = async () => {
     setLoading(true)
     try {
       const response = await getCars()
       const parsedCars = Array.isArray(response) ? response : (response?.data ?? [])
-      setCars(parsedCars)
+      const activeCars = parsedCars.filter((car: CarModel) => car.is_active)
+      setCars(activeCars)
     } finally {
       setLoading(false)
     }
@@ -35,25 +40,70 @@ const CarManager = () => {
     event.preventDefault()
     if (!modelName.trim()) return
 
-    await addCar({
-      model_name: modelName,
-      base_suffix: baseSuffix,
-      variant
-    })
+    try {
+      setError('')
 
+      if (editingId) {
+        // Edit existing car
+        await updateCar(editingId, {
+          model_name: modelName,
+          base_suffix: baseSuffix,
+          variant
+        })
+      } else {
+        // Add new car
+        await addCar({
+          model_name: modelName,
+          base_suffix: baseSuffix,
+          variant
+        })
+      }
+
+      setModelName('')
+      setBaseSuffix('')
+      setVariant('')
+      setEditingId(null)
+      setShowForm(false)
+      await fetchCars()
+    } catch (err) {
+      const message = err instanceof Error ? err.message : editingId
+        ? 'Failed to edit car model'
+        : 'Failed to add car model'
+      setError(message)
+    }
+  }
+
+  const handleEdit = (car: CarModel) => {
+    setEditingId(car.id)
+    setModelName(car.model_name)
+    setBaseSuffix(car.base_suffix || '')
+    setVariant(car.variant || '')
+    setShowForm(true)
+  }
+
+  const handleFormClose = () => {
+    setShowForm(false)
+    setEditingId(null)
     setModelName('')
     setBaseSuffix('')
     setVariant('')
-    setShowForm(false)
-    await fetchCars()
   }
 
   const handleDelete = async (id: string) => {
     const confirmed = window.confirm('Are you sure you want to delete this car model?')
     if (!confirmed) return
 
-    await deleteCar(id)
-    await fetchCars()
+    try {
+      setError('')
+      setDeletingId(id)
+      await deleteCar(id)
+      await fetchCars()
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to delete car model'
+      setError(message)
+    } finally {
+      setDeletingId(null)
+    }
   }
 
   if (loading) {
@@ -64,6 +114,11 @@ const CarManager = () => {
     <div className="min-h-screen bg-[#0F0F0F]">
       <Sidebar />
       <main className="ml-[260px] min-h-screen bg-[#0F0F0F] p-8">
+        {error && (
+          <div className="mb-4">
+            <ErrorBanner message={error} onDismiss={() => setError('')} />
+          </div>
+        )}
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-2xl font-semibold text-white">Car Models</h2>
@@ -88,7 +143,9 @@ const CarManager = () => {
             onSubmit={handleAddCar}
             className="rounded-2xl border border-white/[0.08] bg-[#1A1A1A] p-6"
           >
-            <h3 className="mb-4 text-sm font-medium text-white">New Car Model</h3>
+            <h3 className="mb-4 text-sm font-medium text-white">
+              {editingId ? 'Edit Car Model' : 'New Car Model'}
+            </h3>
 
             <div className="grid grid-cols-3 gap-3">
               <div>
@@ -129,7 +186,7 @@ const CarManager = () => {
             <div className="mt-6 flex justify-end gap-3">
               <button
                 type="button"
-                onClick={() => setShowForm(false)}
+                onClick={handleFormClose}
                 className="rounded-xl border border-white/[0.08] bg-[#1A1A1A] px-5 py-2.5 text-sm text-white transition-all hover:border-[#DC1428]"
               >
                 Cancel
@@ -138,7 +195,7 @@ const CarManager = () => {
                 type="submit"
                 className="rounded-xl border border-white/[0.08] bg-[#1A1A1A] px-5 py-2.5 text-sm text-white transition-all hover:border-[#DC1428]"
               >
-                Save Model
+                {editingId ? 'Update Model' : 'Save Model'}
               </button>
             </div>
           </form>
@@ -186,12 +243,25 @@ const CarManager = () => {
                         {car.is_active ? 'Active' : 'Inactive'}
                       </span>
                     </div>
-                    <div className="col-span-1 flex justify-end">
-                      <Trash2
-                        size={16}
+                    <div className="col-span-1 flex justify-end gap-2">
+                      <button
+                        onClick={() => handleEdit(car)}
+                        className="text-[#888888] transition-colors hover:text-[#4ADE80]"
+                        aria-label="Edit car"
+                      >
+                        <Edit2 size={16} />
+                      </button>
+                      <button
                         onClick={() => handleDelete(car.id)}
-                        className="cursor-pointer text-[#888888] transition-colors hover:text-[#DC1428]"
-                      />
+                        disabled={deletingId === car.id}
+                        className="text-[#888888] transition-colors hover:text-[#DC1428] disabled:opacity-50 disabled:cursor-not-allowed"
+                        aria-label="Delete car"
+                      >
+                        <Trash2
+                          size={16}
+                          className={deletingId === car.id ? 'animate-pulse' : ''}
+                        />
+                      </button>
                     </div>
                   </div>
                 ))}

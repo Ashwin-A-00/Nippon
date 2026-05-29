@@ -42,13 +42,27 @@ const updateCar = async (req, res) => {
 const deleteCar = async (req, res) => {
   const { id } = req.params
 
-  const { error } = await supabase
-    .from('car_models')
-    .delete()
-    .eq('id', id)
+  try {
+    // First, delete all sales entries for this car
+    await supabase
+      .from('sales_entries')
+      .delete()
+      .eq('car_model_id', id)
 
-  if (error) return fail(res, error.message)
-  return success(res, { message: 'Car deleted successfully' })
+    // Then soft delete the car
+    const { data, error } = await supabase
+      .from('car_models')
+      .update({ is_active: false })
+      .eq('id', id)
+      .select()
+
+    if (error) return fail(res, error.message)
+    if (!data.length) return fail(res, 'Car not found', 404)
+    return success(res, { message: 'Car deleted successfully' })
+  } catch (err) {
+    console.error('Delete car error:', err)
+    return fail(res, 'Failed to delete car model')
+  }
 }
 
 module.exports = { getCars, addCar, updateCar, deleteCar }

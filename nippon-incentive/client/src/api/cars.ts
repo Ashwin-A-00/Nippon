@@ -16,6 +16,13 @@ export const updateCar = async (id: string, data: unknown) => {
 }
 
 export const deleteCar = async (id: string) => {
-  const response = await apiClient.delete(`/cars/${id}`)
-  return response.data.data
+  try {
+    const response = await apiClient.delete(`/cars/${id}`)
+    return response.data.data
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(`Failed to delete car: ${error.message}`)
+    }
+    throw new Error('Failed to delete car')
+  }
 }

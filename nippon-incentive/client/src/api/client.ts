@@ -15,4 +15,17 @@ apiClient.interceptors.request.use((config) => {
   return config
 })
 
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    // Log error details for debugging
+    console.error('API Error:', {
+      status: error.response?.status,
+      message: error.response?.data?.message || error.message,
+      data: error.response?.data
+    })
+    return Promise.reject(error)
+  }
+)
+
 export default apiClient
