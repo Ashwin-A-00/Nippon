@@ -2,6 +2,7 @@ import { FormEvent, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import { Eye, EyeOff } from 'lucide-react'
+import { ButtonLoader } from '../components/LoadingSpinner'
 
 const inputClass =
   'w-full rounded-xl border border-white/[0.08] bg-[#1A1A1A] px-4 py-3 text-sm text-white outline-none transition-all focus:border-[#DC1428] focus:ring-2 focus:ring-[#DC1428]/20'
@@ -114,7 +115,9 @@ const Login = () => {
               className="mt-6 flex w-full items-center justify-center rounded-xl bg-[#DC1428] py-3 text-sm font-medium text-white transition-all hover:bg-[#FF1A30] disabled:cursor-not-allowed disabled:opacity-50"
             >
               {loading && (
-                <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                <span className="mr-2.5">
+                  <ButtonLoader />
+                </span>
               )}
               {loading ? 'Signing in...' : 'Sign In'}
             </button>

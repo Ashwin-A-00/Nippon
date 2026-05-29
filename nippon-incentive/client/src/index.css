@@ -20,3 +20,61 @@ body {
 
 input[type=number]::-webkit-inner-spin-button,
 input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
+
+/* Noir Rouge loaders */
+@keyframes noir-bar-bounce {
+  0%, 70%, 100% {
+    transform: scaleY(0.35);
+    opacity: 0.45;
+  }
+  35% {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+}
+
+@keyframes noir-arc-spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes noir-loader-enter {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes noir-text-pulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+.noir-bar,
+.noir-bar-accent,
+.noir-bar-light,
+.noir-bar-light-accent {
+  display: block;
+  transform-origin: bottom center;
+  animation: noir-bar-bounce 1.05s ease-in-out infinite;
+}
+
+.noir-bar { background-color: #444444; }
+.noir-bar-accent { background-color: #DC1428; }
+.noir-bar-light { background-color: rgba(255, 255, 255, 0.35); }
+.noir-bar-light-accent { background-color: #ffffff; }
+
+.noir-arc-spin {
+  animation: noir-arc-spin 0.9s linear infinite;
+}
+
+.noir-loader-enter {
+  animation: noir-loader-enter 0.35s ease-out both;
+}
+
+.noir-text-pulse {
+  animation: noir-text-pulse 1.8s ease-in-out infinite;
+}
