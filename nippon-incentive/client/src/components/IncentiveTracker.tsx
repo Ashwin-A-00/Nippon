@@ -1,5 +1,4 @@
 import type { SlabTier } from '../types'
-import { formatCurrency } from '../lib/formatCurrency'
 
 interface IncentiveTrackerProps {
   totalCars: number
@@ -8,45 +7,94 @@ interface IncentiveTrackerProps {
   activeTier: SlabTier | null
 }
 
+const formatInr = (amount: number) => {
+  if (amount === 0) return '₹0'
+  return '₹' + new Intl.NumberFormat('en-IN').format(amount)
+}
+
 const IncentiveTracker = ({ totalCars, tiers, payout, activeTier }: IncentiveTrackerProps) => {
+  const isActiveOrBelow = (tier: SlabTier) => {
+    if (!activeTier) return false
+    return tier.min_cars <= activeTier.min_cars
+  }
+
+  const gridCols =
+    tiers.length === 1
+      ? 'grid-cols-1'
+      : tiers.length === 2
+        ? 'grid-cols-2'
+        : tiers.length === 3
+          ? 'grid-cols-3'
+          : tiers.length === 4
+            ? 'grid-cols-4'
+            : 'grid-cols-3'
+
   return (
-    <section className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm sm:p-5">
-      <h3 className="text-lg font-semibold text-gray-900">Live Incentive Tracker</h3>
+    <section className="rounded-2xl border border-white/[0.08] bg-[#1A1A1A] p-8">
+      <div className="mb-8 flex items-center justify-between">
+        <span className="text-sm font-medium text-[#888888]">Live Incentive Tracker</span>
+        <span className="h-2 w-2 animate-pulse rounded-full bg-[#DC1428]" />
+      </div>
 
-      <div className="mt-3 grid gap-4 md:grid-cols-3">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">Total Cars Sold</p>
-          <p className="mt-1 text-4xl font-extrabold text-gray-900">{totalCars}</p>
+      <div className="mb-8 text-center">
+        <div className="text-8xl font-bold leading-none tracking-tight text-white">{totalCars}</div>
+        <div className="mt-3 text-xs uppercase tracking-widest text-[#888888]">cars sold this month</div>
+      </div>
+
+      <div className="mb-8">
+        <div className="mb-2 flex justify-between text-xs font-medium text-[#888888]">
+          <span>0</span>
+          {tiers.map((tier) => (
+            <span key={tier.id}>{tier.min_cars}</span>
+          ))}
         </div>
-
-        <div className="md:col-span-2">
-          <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">Tier Progress</p>
-          <ul className="mt-2 space-y-2">
-            {tiers.map((tier) => {
-              const isActive = activeTier?.id === tier.id
-              return (
-                <li
-                  key={tier.id}
-                  className={`flex items-center justify-between rounded-lg border px-3 py-2 text-sm ${
-                    isActive
-                      ? 'border-[#CC0000] bg-[#CC0000] font-semibold text-white'
-                      : 'border-gray-200 bg-gray-50 text-gray-700'
-                  }`}
-                >
-                  <span>
-                    {tier.min_cars} - {tier.max_cars === null ? '∞' : tier.max_cars} cars
-                  </span>
-                  <span>₹{tier.incentive_per_car}/car</span>
-                </li>
-              )
-            })}
-          </ul>
+        <div className="flex h-2 gap-px overflow-hidden rounded-full bg-[#222222]">
+          {tiers.map((tier) => {
+            const active = isActiveOrBelow(tier)
+            return (
+              <div
+                key={tier.id}
+                className={`flex-1 transition-all duration-500 ${active ? 'bg-[#DC1428]' : 'bg-white/[0.08]'}`}
+              />
+            )
+          })}
         </div>
       </div>
 
-      <div className="mt-4 rounded-lg bg-emerald-50 px-4 py-3">
-        <p className="text-xs font-semibold uppercase tracking-wide text-emerald-700">Total Payout</p>
-        <p className="mt-1 text-3xl font-extrabold text-emerald-600">{formatCurrency(payout)}</p>
+      <div className={`mb-8 grid gap-3 ${gridCols}`}>
+        {tiers.map((tier) => {
+          const isActive = activeTier?.id === tier.id
+
+          return (
+            <div
+              key={tier.id}
+              className={`transition-all duration-300 ${
+                isActive
+                  ? 'rounded-xl bg-[#DC1428] px-4 py-4 text-white'
+                  : 'rounded-xl border border-white/[0.08] bg-[#222222] px-4 py-4 text-[#888888]'
+              }`}
+            >
+              <div className="text-xs font-medium">
+                {tier.min_cars} – {tier.max_cars ?? '∞'} cars
+              </div>
+              <div className="mt-2 text-lg font-bold leading-tight">
+                ₹{tier.incentive_per_car.toLocaleString('en-IN')}
+                <span className="ml-0.5 text-xs font-normal opacity-70">/car</span>
+              </div>
+            </div>
+          )
+        })}
+      </div>
+
+      <div className="mt-2 flex items-center justify-between border-t border-white/[0.08] pt-6">
+        <span className="text-sm font-medium text-[#888888]">Total Payout</span>
+        <span
+          className={`text-4xl font-bold transition-colors ${
+            payout > 0 ? 'text-[#4ADE80]' : 'text-[#444444]'
+          }`}
+        >
+          {formatInr(payout)}
+        </span>
       </div>
     </section>
   )

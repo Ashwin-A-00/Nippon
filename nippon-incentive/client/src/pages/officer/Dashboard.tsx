@@ -1,28 +1,74 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { getIncentive } from '../../api/incentive'
-import { formatCurrency } from '../../lib/formatCurrency'
+import Sidebar from '../../components/Sidebar'
+import CustomSelect from '../../components/CustomSelect'
+import LoadingSpinner from '../../components/LoadingSpinner'
+import ErrorBanner from '../../components/ErrorBanner'
 import type { IncentiveResult } from '../../types'
-import Navbar from '../../components/Navbar'
+import { ArrowRight } from 'lucide-react'
 
-const monthOptions = Array.from({ length: 12 }, (_, index) => index + 1)
-const yearOptions = [2024, 2025, 2026, 2027, 2028]
+const months = [
+  { label: 'January', value: 1 },
+  { label: 'February', value: 2 },
+  { label: 'March', value: 3 },
+  { label: 'April', value: 4 },
+  { label: 'May', value: 5 },
+  { label: 'June', value: 6 },
+  { label: 'July', value: 7 },
+  { label: 'August', value: 8 },
+  { label: 'September', value: 9 },
+  { label: 'October', value: 10 },
+  { label: 'November', value: 11 },
+  { label: 'December', value: 12 }
+]
+
+const years = [
+  { label: '2024', value: 2024 },
+  { label: '2025', value: 2025 },
+  { label: '2026', value: 2026 },
+  { label: '2027', value: 2027 },
+  { label: '2028', value: 2028 }
+]
 
 const Dashboard = () => {
+  const navigate = useNavigate()
   const today = new Date()
   const [month, setMonth] = useState(today.getMonth() + 1)
   const [year, setYear] = useState(today.getFullYear())
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState<IncentiveResult | null>(null)
+  const [errorMsg, setErrorMsg] = useState('')
 
   const name = useMemo(() => localStorage.getItem('name') || 'Officer', [])
 
   useEffect(() => {
     const loadIncentive = async () => {
       setLoading(true)
+      setErrorMsg('')
       try {
         const response = await getIncentive(month, year)
         setResult(response?.data ?? response)
+      } catch (err: any) {
+        if (
+          err?.response?.status === 404 ||
+          err?.status === 404 ||
+          err?.message?.includes('404') ||
+          err?.message?.includes('not found')
+        ) {
+          setResult({
+            total_cars: 0,
+            payout: 0,
+            tier: null,
+            month,
+            year,
+            active_slab: 'None',
+            tiers: [],
+            sales_breakdown: []
+          })
+        } else {
+          setErrorMsg(err?.message || 'Failed to fetch incentive data.')
+        }
       } finally {
         setLoading(false)
       }
@@ -32,74 +78,89 @@ const Dashboard = () => {
   }, [month, year])
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Navbar />
-      <main className="mx-auto max-w-7xl px-4 pb-10 pt-24 sm:px-6 lg:px-8">
-        <div className="mb-6">
-          <h2 className="text-3xl font-bold text-gray-900">Welcome, {name}</h2>
-          <p className="mt-1 text-sm text-gray-600">Track your performance and incentives in real time.</p>
+    <div className="min-h-screen bg-[#0F0F0F]">
+      <Sidebar />
+      <main className="ml-[260px] min-h-screen bg-[#0F0F0F] p-8">
+        <div>
+          <h2 className="text-2xl font-semibold text-white">Good morning, {name}</h2>
+          <p className="mt-1 text-sm text-[#888888]">Track your performance and incentives</p>
         </div>
 
-        <div className="mb-6 grid gap-3 sm:grid-cols-2">
-          <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700">Month</label>
-            <select
-              value={month}
-              onChange={(event) => setMonth(Number(event.target.value))}
-              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm outline-none transition focus:border-[#CC0000] focus:ring-2 focus:ring-[#CC0000]/20"
-            >
-              {monthOptions.map((value) => (
-                <option key={value} value={value}>
-                  {value}
-                </option>
-              ))}
-            </select>
-          </div>
+        <div className="my-6 h-px bg-white/[0.08]" />
 
-          <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700">Year</label>
-            <select
-              value={year}
-              onChange={(event) => setYear(Number(event.target.value))}
-              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm outline-none transition focus:border-[#CC0000] focus:ring-2 focus:ring-[#CC0000]/20"
-            >
-              {yearOptions.map((value) => (
-                <option key={value} value={value}>
-                  {value}
-                </option>
-              ))}
-            </select>
-          </div>
+        <div className="mb-6 flex max-w-xs gap-3">
+          <CustomSelect
+            value={month}
+            onChange={(val) => setMonth(Number(val))}
+            options={months}
+            className="flex-1"
+          />
+          <CustomSelect
+            value={year}
+            onChange={(val) => setYear(Number(val))}
+            options={years}
+            className="flex-1"
+          />
         </div>
 
-        <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-          <h3 className="text-lg font-semibold text-gray-900">Current Incentive Summary</h3>
+        <section className="relative w-full rounded-2xl border border-white/[0.08] bg-[#1A1A1A] p-8">
+          <h3 className="mb-6 text-xs font-semibold uppercase tracking-wider text-[#888888]">
+            Incentive Summary
+          </h3>
 
-          {loading ? (
-            <p className="mt-4 text-sm text-gray-600">Fetching incentive data...</p>
-          ) : (
-            <div className="mt-5 grid gap-4 sm:grid-cols-3">
-              <div className="rounded-lg bg-gray-50 p-4">
-                <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">Total Cars</p>
-                <p className="mt-1 text-3xl font-bold text-gray-900">{result?.total_cars ?? 0}</p>
-              </div>
-              <div className="rounded-lg bg-gray-50 p-4">
-                <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">Tier Hit</p>
-                <p className="mt-1 text-lg font-semibold text-gray-900">{result?.tier ? `${result.tier.min_cars}+` : 'No tier yet'}</p>
-              </div>
-              <div className="rounded-lg bg-gray-50 p-4">
-                <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">Total Payout</p>
-                <p className="mt-1 text-3xl font-bold text-emerald-600">{formatCurrency(result?.payout ?? 0)}</p>
-              </div>
+          {errorMsg && (
+            <div className="mb-6">
+              <ErrorBanner message={errorMsg} />
             </div>
           )}
 
-          <Link
-            to="/officer/sales"
-            className="mt-6 inline-flex rounded-lg bg-[#CC0000] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#a80000]"
-          >
-            Log Sales
-          </Link>
+          {loading ? (
+            <div className="flex items-center justify-center py-12">
+              <LoadingSpinner />
+            </div>
+          ) : (
+            <div>
+              <div className="grid w-full grid-cols-3 items-center gap-8">
+                <div className="flex flex-col">
+                  <span className="text-4xl font-bold text-white">{result?.total_cars ?? 0}</span>
+                  <span className="mt-1 text-xs font-medium uppercase tracking-wider text-[#888888]">
+                    Total Cars
+                  </span>
+                </div>
+
+                <div className="flex flex-col">
+                  <span className="truncate text-2xl font-bold text-[#DC1428]">
+                    {result?.tier
+                      ? `${result.tier.min_cars}–${result.tier.max_cars ?? '∞'} cars`
+                      : 'No tier'}
+                  </span>
+                  <span className="mt-1 text-xs font-medium uppercase tracking-wider text-[#888888]">
+                    Tier Hit
+                  </span>
+                </div>
+
+                <div className="flex flex-col">
+                  <span className="text-3xl font-bold text-[#4ADE80]">
+                    ₹{(result?.payout ?? 0).toLocaleString('en-IN')}
+                  </span>
+                  <span className="mt-1 text-xs font-medium uppercase tracking-wider text-[#888888]">
+                    Total Payout
+                  </span>
+                </div>
+              </div>
+
+              <div className="mt-8 flex justify-end border-t border-white/[0.08] pt-6">
+                <button
+                  type="button"
+                  onClick={() => navigate('/officer/sales')}
+                  className="flex items-center gap-2 rounded-xl border border-white/[0.08] bg-[#1A1A1A] px-6 py-3 text-sm font-medium text-white transition-all hover:border-[#DC1428]"
+                >
+                  <span>Log Sales for this month</span>
+                  <ArrowRight size={16} />
+                </button>
+              </div>
+            </div>
+          )}
         </section>
       </main>
     </div>

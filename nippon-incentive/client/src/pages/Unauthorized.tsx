@@ -1,16 +1,20 @@
 import { Link } from 'react-router-dom'
+import { ShieldX } from 'lucide-react'
 
 const Unauthorized = () => {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
-      <div className="w-full max-w-lg rounded-2xl border border-gray-200 bg-white p-10 text-center shadow-lg">
-        <h1 className="text-4xl font-bold tracking-tight text-gray-900">Access Denied</h1>
-        <p className="mt-3 text-base text-gray-600">You don't have permission to view this page</p>
+    <div className="flex min-h-screen flex-col items-center justify-center bg-[#0F0F0F] px-4">
+      <div className="flex flex-col items-center text-center">
+        <ShieldX className="mb-6 text-[#888888]" size={64} />
+        <h1 className="text-2xl font-semibold text-white">Access Denied</h1>
+        <p className="mt-2 mb-8 text-sm text-[#888888]">
+          You don't have permission to view this page.
+        </p>
         <Link
           to="/login"
-          className="mt-8 inline-flex rounded-lg bg-[#CC0000] px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-[#a80000]"
+          className="inline-block rounded-xl border border-white/[0.08] bg-[#1A1A1A] px-6 py-2.5 text-sm text-white transition-all hover:border-[#DC1428]"
         >
-          Go to Login
+          Back to Login
         </Link>
       </div>
     </div>
