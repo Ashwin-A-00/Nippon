@@ -97,4 +97,45 @@ const updateSlab = async (req, res) => {
   return success(res, data[0])
 }
 
-module.exports = { getSlabs, getActiveSlab, createSlab, addTier, activateSlab, updateSlab }
+const updateTier = async (req, res) => {
+  const { tierId } = req.params
+  const { min_cars, max_cars, incentive_per_car, sort_order } = req.body
+
+  const { data, error } = await supabase
+    .from('slab_tiers')
+    .update({
+      min_cars,
+      max_cars: max_cars || null,
+      incentive_per_car,
+      sort_order
+    })
+    .eq('id', tierId)
+    .select()
+
+  if (error) return fail(res, error.message)
+  if (!data.length) return fail(res, 'Tier not found', 404)
+  return success(res, data[0])
+}
+
+const deleteTier = async (req, res) => {
+  const { tierId } = req.params
+
+  const { error } = await supabase
+    .from('slab_tiers')
+    .delete()
+    .eq('id', tierId)
+
+  if (error) return fail(res, error.message)
+  return success(res, { message: 'Tier deleted successfully' })
+}
+
+module.exports = { 
+  getSlabs, 
+  getActiveSlab, 
+  createSlab, 
+  addTier, 
+  activateSlab, 
+  updateSlab, 
+  updateTier, 
+  deleteTier 
+}

@@ -6,11 +6,18 @@ const {
   createSlab,
   addTier,
   activateSlab,
-  updateSlab
+  updateSlab,
+  updateTier,
+  deleteTier
 } = require('../controllers/slabs.controller')
 const authenticate = require('../middleware/authenticate')
 const requireRole = require('../middleware/requireRole')
 
+// Specific tier routes FIRST (more specific)
+router.put('/tiers/:tierId', authenticate, requireRole('admin'), updateTier)
+router.delete('/tiers/:tierId', authenticate, requireRole('admin'), deleteTier)
+
+// Then generic slab routes (less specific)
 router.get('/', authenticate, getSlabs)
 router.get('/active', authenticate, getActiveSlab)
 router.post('/', authenticate, requireRole('admin'), createSlab)

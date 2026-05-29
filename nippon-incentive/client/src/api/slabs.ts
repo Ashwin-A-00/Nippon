@@ -24,3 +24,27 @@ export const activateSlab = async (id: string) => {
   const response = await apiClient.post(`/slabs/${id}/activate`)
   return response.data.data
 }
+
+export const updateTier = async (tierId: string, tierData: unknown) => {
+  try {
+    const response = await apiClient.put(`/slabs/tiers/${tierId}`, tierData)
+    return response.data.data
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(`Failed to update tier: ${error.message}`)
+    }
+    throw new Error('Failed to update tier')
+  }
+}
+
+export const deleteTier = async (tierId: string) => {
+  try {
+    const response = await apiClient.delete(`/slabs/tiers/${tierId}`)
+    return response.data.data
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(`Failed to delete tier: ${error.message}`)
+    }
+    throw new Error('Failed to delete tier')
+  }
+}

@@ -1,8 +1,9 @@
 import { FormEvent, useEffect, useState } from 'react'
-import { activateSlab, addTier, createSlab, getSlabs } from '../../api/slabs'
-import type { SlabConfig } from '../../types'
+import { activateSlab, addTier, createSlab, getSlabs, updateTier, deleteTier } from '../../api/slabs'
+import type { SlabConfig, SlabTier } from '../../types'
 import Sidebar from '../../components/Sidebar'
 import SlabTable from '../../components/SlabTable'
+import ErrorBanner from '../../components/ErrorBanner'
 import { FullPageLoader } from '../../components/LoadingSpinner'
 import { Plus } from 'lucide-react'
 
@@ -15,9 +16,18 @@ const SlabManager = () => {
   const [label, setLabel] = useState('')
   const [loading, setLoading] = useState(true)
   const [expandedSlabId, setExpandedSlabId] = useState<string | null>(null)
+  const [error, setError] = useState('')
+  const [editingTierId, setEditingTierId] = useState<string | null>(null)
+  const [deletingTierId, setDeletingTierId] = useState<string | null>(null)
   const [tierForms, setTierForms] = useState<
     Record<string, { min_cars: string; max_cars: string; incentive_per_car: string; sort_order: string }>
   >({})
+  const [editTierForm, setEditTierForm] = useState<{
+    min_cars: string
+    max_cars: string
+    incentive_per_car: string
+    sort_order: string
+  }>({ min_cars: '', max_cars: '', incentive_per_car: '', sort_order: '' })
 
   const fetchSlabs = async () => {
     setLoading(true)
@@ -69,6 +79,58 @@ const SlabManager = () => {
     await fetchSlabs()
   }
 
+  const handleEditTier = (tier: SlabTier) => {
+    setEditingTierId(tier.id)
+    setEditTierForm({
+      min_cars: String(tier.min_cars),
+      max_cars: tier.max_cars ? String(tier.max_cars) : '',
+      incentive_per_car: String(tier.incentive_per_car),
+      sort_order: String(tier.sort_order || 0)
+    })
+  }
+
+  const handleSaveTier = async () => {
+    if (!editingTierId) return
+
+    try {
+      setError('')
+      await updateTier(editingTierId, {
+        min_cars: Number(editTierForm.min_cars),
+        max_cars: editTierForm.max_cars ? Number(editTierForm.max_cars) : null,
+        incentive_per_car: Number(editTierForm.incentive_per_car),
+        sort_order: Number(editTierForm.sort_order)
+      })
+      setEditingTierId(null)
+      setEditTierForm({ min_cars: '', max_cars: '', incentive_per_car: '', sort_order: '' })
+      await fetchSlabs()
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to update tier'
+      setError(message)
+    }
+  }
+
+  const handleCancelEdit = () => {
+    setEditingTierId(null)
+    setEditTierForm({ min_cars: '', max_cars: '', incentive_per_car: '', sort_order: '' })
+  }
+
+  const handleDeleteTier = async (tierId: string) => {
+    const confirmed = window.confirm('Delete this tier?')
+    if (!confirmed) return
+
+    try {
+      setError('')
+      setDeletingTierId(tierId)
+      await deleteTier(tierId)
+      await fetchSlabs()
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to delete tier'
+      setError(message)
+    } finally {
+      setDeletingTierId(null)
+    }
+  }
+
   const getFormattedDate = (dateString?: string) => {
     if (!dateString) return 'Date unknown'
     const date = new Date(dateString)
@@ -83,6 +145,11 @@ const SlabManager = () => {
     <div className="min-h-screen bg-[#0F0F0F]">
       <Sidebar />
       <main className="ml-[260px] min-h-screen bg-[#0F0F0F] p-8">
+        {error && (
+          <div className="mb-4">
+            <ErrorBanner message={error} onDismiss={() => setError('')} />
+          </div>
+        )}
         <div className="flex items-center justify-between">
           <h2 className="text-2xl font-semibold text-white">Incentive Slabs</h2>
           <button
@@ -177,7 +244,93 @@ const SlabManager = () => {
 
                 <div className="my-4 h-px bg-white/[0.08]" />
 
-                <SlabTable tiers={slab.slab_tiers} />
+                {editingTierId ? (
+                  <div className="rounded-lg border border-white/[0.08] bg-[#222222] p-4">
+                    <h4 className="mb-3 text-xs font-semibold uppercase tracking-wider text-[#888888]">
+                      Edit Tier Details
+                    </h4>
+                    <div className="grid grid-cols-4 gap-3">
+                      <div>
+                        <label className="mb-1 block text-[10px] font-medium text-[#888888]">
+                          Min Cars *
+                        </label>
+                        <input
+                          type="number"
+                          required
+                          value={editTierForm.min_cars}
+                          onChange={(e) =>
+                            setEditTierForm({ ...editTierForm, min_cars: e.target.value })
+                          }
+                          className={inputClass}
+                        />
+                      </div>
+                      <div>
+                        <label className="mb-1 block text-[10px] font-medium text-[#888888]">
+                          Max Cars
+                        </label>
+                        <input
+                          type="number"
+                          placeholder="∞ for unlimited"
+                          value={editTierForm.max_cars}
+                          onChange={(e) =>
+                            setEditTierForm({ ...editTierForm, max_cars: e.target.value })
+                          }
+                          className={inputClass}
+                        />
+                      </div>
+                      <div>
+                        <label className="mb-1 block text-[10px] font-medium text-[#888888]">
+                          Incentive per Car (₹) *
+                        </label>
+                        <input
+                          type="number"
+                          required
+                          value={editTierForm.incentive_per_car}
+                          onChange={(e) =>
+                            setEditTierForm({ ...editTierForm, incentive_per_car: e.target.value })
+                          }
+                          className={inputClass}
+                        />
+                      </div>
+                      <div>
+                        <label className="mb-1 block text-[10px] font-medium text-[#888888]">
+                          Sort Order *
+                        </label>
+                        <input
+                          type="number"
+                          required
+                          value={editTierForm.sort_order}
+                          onChange={(e) =>
+                            setEditTierForm({ ...editTierForm, sort_order: e.target.value })
+                          }
+                          className={inputClass}
+                        />
+                      </div>
+                    </div>
+                    <div className="mt-3 flex justify-end gap-2">
+                      <button
+                        type="button"
+                        onClick={handleCancelEdit}
+                        className="rounded-lg border border-white/[0.08] bg-[#1A1A1A] px-3 py-1.5 text-xs text-white transition-all hover:border-[#DC1428]"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleSaveTier}
+                        className="rounded-lg border border-white/[0.08] bg-[#1A1A1A] px-3 py-1.5 text-xs text-white transition-all hover:border-[#DC1428]"
+                      >
+                        Save
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <SlabTable
+                    tiers={slab.slab_tiers}
+                    onEdit={handleEditTier}
+                    onDelete={handleDeleteTier}
+                  />
+                )}
 
                 <div className="mt-4">
                   {!isAddingTier ? (
