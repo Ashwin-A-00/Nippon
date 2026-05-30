@@ -51,7 +51,7 @@ const SalesEntry = () => {
 
       const slab = await getActiveSlab()
       const sorted = [...(slab?.slab_tiers ?? [])].sort(
-        (a: SlabTier, b: SlabTier) => a.sort_order - b.sort_order
+        (a: SlabTier, b: SlabTier) => a.min_cars - b.min_cars
       )
       setTiers(sorted)
 

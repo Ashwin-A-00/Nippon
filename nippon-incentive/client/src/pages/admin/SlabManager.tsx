@@ -27,8 +27,7 @@ const SlabManager = () => {
     min_cars: string
     max_cars: string
     incentive_per_car: string
-    sort_order: string
-  }>({ min_cars: '', max_cars: '', incentive_per_car: '', sort_order: '' })
+  }>({ min_cars: '', max_cars: '', incentive_per_car: '' })
 
   const fetchSlabs = async () => {
     setLoading(true)
@@ -60,16 +59,19 @@ const SlabManager = () => {
     const form = tierForms[slabId]
     if (!form) return
 
+    const slab = slabs.find(s => s.id === slabId)
+    const sortOrder = (slab?.slab_tiers?.length ?? 0) + 1
+
     await addTier(slabId, {
       min_cars: Number(form.min_cars),
       max_cars: form.max_cars ? Number(form.max_cars) : null,
       incentive_per_car: Number(form.incentive_per_car),
-      sort_order: Number(form.sort_order || '0')
+      sort_order: sortOrder
     })
 
     setTierForms((prev) => ({
       ...prev,
-      [slabId]: { min_cars: '', max_cars: '', incentive_per_car: '', sort_order: '' }
+      [slabId]: { min_cars: '', max_cars: '', incentive_per_car: '' }
     }))
     setExpandedSlabId(null)
     await fetchSlabs()
@@ -85,8 +87,7 @@ const SlabManager = () => {
     setEditTierForm({
       min_cars: String(tier.min_cars),
       max_cars: tier.max_cars ? String(tier.max_cars) : '',
-      incentive_per_car: String(tier.incentive_per_car),
-      sort_order: String(tier.sort_order || 0)
+      incentive_per_car: String(tier.incentive_per_car)
     })
   }
 
@@ -98,11 +99,10 @@ const SlabManager = () => {
       await updateTier(editingTierId, {
         min_cars: Number(editTierForm.min_cars),
         max_cars: editTierForm.max_cars ? Number(editTierForm.max_cars) : null,
-        incentive_per_car: Number(editTierForm.incentive_per_car),
-        sort_order: Number(editTierForm.sort_order)
+        incentive_per_car: Number(editTierForm.incentive_per_car)
       })
       setEditingTierId(null)
-      setEditTierForm({ min_cars: '', max_cars: '', incentive_per_car: '', sort_order: '' })
+      setEditTierForm({ min_cars: '', max_cars: '', incentive_per_car: '' })
       await fetchSlabs()
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to update tier'
@@ -112,7 +112,7 @@ const SlabManager = () => {
 
   const handleCancelEdit = () => {
     setEditingTierId(null)
-    setEditTierForm({ min_cars: '', max_cars: '', incentive_per_car: '', sort_order: '' })
+    setEditTierForm({ min_cars: '', max_cars: '', incentive_per_car: '' })
   }
 
   const handleDeleteTier = async (tierId: string) => {
@@ -278,7 +278,7 @@ const SlabManager = () => {
                     <h4 className="mb-3 text-xs font-semibold uppercase tracking-wider text-[#888888]">
                       Edit Tier Details
                     </h4>
-                    <div className="grid grid-cols-4 gap-3">
+                    <div className="grid grid-cols-3 gap-3">
                       <div>
                         <label className="mb-1 block text-[10px] font-medium text-[#888888]">
                           Min Cars *
@@ -321,20 +321,6 @@ const SlabManager = () => {
                           className={inputClass}
                         />
                       </div>
-                      <div>
-                        <label className="mb-1 block text-[10px] font-medium text-[#888888]">
-                          Sort Order *
-                        </label>
-                        <input
-                          type="number"
-                          required
-                          value={editTierForm.sort_order}
-                          onChange={(e) =>
-                            setEditTierForm({ ...editTierForm, sort_order: e.target.value })
-                          }
-                          className={inputClass}
-                        />
-                      </div>
                     </div>
                     <div className="mt-3 flex justify-end gap-2">
                       <button
@@ -373,8 +359,7 @@ const SlabManager = () => {
                             [slab.id]: {
                               min_cars: '',
                               max_cars: '',
-                              incentive_per_car: '',
-                              sort_order: ''
+                              incentive_per_car: ''
                             }
                           }))
                         }
@@ -392,7 +377,7 @@ const SlabManager = () => {
                       <h4 className="mb-3 text-xs font-semibold uppercase tracking-wider text-[#888888]">
                         New Tier Details
                       </h4>
-                      <div className="grid grid-cols-4 gap-3">
+                      <div className="grid grid-cols-3 gap-3">
                         <div>
                           <label className="mb-1 block text-[10px] font-medium text-[#888888]">
                             Min Cars *
@@ -439,23 +424,6 @@ const SlabManager = () => {
                               setTierForms((prev) => ({
                                 ...prev,
                                 [slab.id]: { ...tierForm, incentive_per_car: event.target.value }
-                              }))
-                            }
-                            className={inputClass}
-                          />
-                        </div>
-                        <div>
-                          <label className="mb-1 block text-[10px] font-medium text-[#888888]">
-                            Sort Order *
-                          </label>
-                          <input
-                            type="number"
-                            required
-                            value={tierForm.sort_order}
-                            onChange={(event) =>
-                              setTierForms((prev) => ({
-                                ...prev,
-                                [slab.id]: { ...tierForm, sort_order: event.target.value }
                               }))
                             }
                             className={inputClass}
