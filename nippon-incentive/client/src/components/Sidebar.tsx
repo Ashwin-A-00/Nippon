@@ -65,7 +65,7 @@ const Sidebar = () => {
       </nav>
 
       <div className="absolute bottom-0 w-full border-t border-white/[0.08] p-4">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 mb-4">
           <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#DC1428] text-sm font-semibold text-white">
             {initials}
           </div>
@@ -74,16 +74,17 @@ const Sidebar = () => {
             <p className="text-sm font-medium text-white">{name}</p>
             <p className="text-xs capitalize text-[#888888]">{role || 'officer'}</p>
           </div>
-
-          <button
-            type="button"
-            onClick={handleLogout}
-            className="ml-auto text-[#888888] transition-colors hover:text-white"
-            aria-label="Logout"
-          >
-            <LogOut size={16} />
-          </button>
         </div>
+
+        <button
+          type="button"
+          onClick={handleLogout}
+          className="w-full flex items-center justify-center gap-2 rounded-xl bg-[#DC1428] px-4 py-2.5 text-sm font-medium text-white transition-all hover:bg-[#FF1A30]"
+          aria-label="Logout"
+        >
+          <LogOut size={16} />
+          <span>Logout</span>
+        </button>
       </div>
     </aside>
   )
