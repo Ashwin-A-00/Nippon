@@ -299,7 +299,7 @@ const SlabManager = () => {
                         </label>
                         <input
                           type="number"
-                          placeholder="∞ for unlimited"
+                          placeholder="Leave empty for unlimited"
                           value={editTierForm.max_cars}
                           onChange={(e) =>
                             setEditTierForm({ ...editTierForm, max_cars: e.target.value })
@@ -401,7 +401,7 @@ const SlabManager = () => {
                           </label>
                           <input
                             type="number"
-                            placeholder="∞ for unlimited"
+                            placeholder="Leave empty for unlimited"
                             value={tierForm.max_cars}
                             onChange={(event) =>
                               setTierForms((prev) => ({
