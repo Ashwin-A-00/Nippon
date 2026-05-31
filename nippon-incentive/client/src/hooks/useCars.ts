@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { getCars } from '../api/cars';
+import { getApiErrorMessage } from '../lib/apiError';
 import type { CarModel } from '../types';
 
 export const useCars = () => {
@@ -14,7 +15,7 @@ export const useCars = () => {
       const data = await getCars();
       setCars(data?.data ?? []);
     } catch (err) {
-      setError((err as Error).message);
+      setError(getApiErrorMessage(err));
     } finally {
       setLoading(false);
     }

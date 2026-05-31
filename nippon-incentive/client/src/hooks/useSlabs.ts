@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { getSlabs } from '../api/slabs';
+import { getApiErrorMessage } from '../lib/apiError';
 import type { SlabConfig } from '../types';
 
 export const useSlabs = () => {
@@ -14,7 +15,7 @@ export const useSlabs = () => {
       const data = await getSlabs();
       setActiveSlab(data?.data?.[0] ?? null);
     } catch (err) {
-      setError((err as Error).message);
+      setError(getApiErrorMessage(err));
     } finally {
       setLoading(false);
     }

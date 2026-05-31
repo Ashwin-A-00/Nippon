@@ -5,6 +5,7 @@ import Sidebar from '../../components/Sidebar'
 import CustomSelect from '../../components/CustomSelect'
 import LoadingSpinner from '../../components/LoadingSpinner'
 import ErrorBanner from '../../components/ErrorBanner'
+import { getApiErrorMessage } from '../../lib/apiError'
 import type { IncentiveResult } from '../../types'
 import { ArrowRight } from 'lucide-react'
 
@@ -48,27 +49,10 @@ const Dashboard = () => {
       setErrorMsg('')
       try {
         const response = await getIncentive(month, year)
-        setResult(response?.data ?? response)
-      } catch (err: any) {
-        if (
-          err?.response?.status === 404 ||
-          err?.status === 404 ||
-          err?.message?.includes('404') ||
-          err?.message?.includes('not found')
-        ) {
-          setResult({
-            total_cars: 0,
-            payout: 0,
-            tier: null,
-            month,
-            year,
-            active_slab: 'None',
-            tiers: [],
-            sales_breakdown: []
-          })
-        } else {
-          setErrorMsg(err?.message || 'Failed to fetch incentive data.')
-        }
+        setResult(response)
+      } catch (err) {
+        setResult(null)
+        setErrorMsg(getApiErrorMessage(err, 'Failed to load incentive data.'))
       } finally {
         setLoading(false)
       }

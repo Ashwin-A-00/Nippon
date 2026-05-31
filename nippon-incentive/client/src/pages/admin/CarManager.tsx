@@ -4,6 +4,7 @@ import type { CarModel } from '../../types'
 import Sidebar from '../../components/Sidebar'
 import { FullPageLoader } from '../../components/LoadingSpinner'
 import ErrorBanner from '../../components/ErrorBanner'
+import { getApiErrorMessage } from '../../lib/apiError'
 import { Car, Plus, Trash2, Edit2 } from 'lucide-react'
 
 const inputClass =
@@ -66,10 +67,12 @@ const CarManager = () => {
       setShowForm(false)
       await fetchCars()
     } catch (err) {
-      const message = err instanceof Error ? err.message : editingId
-        ? 'Failed to edit car model'
-        : 'Failed to add car model'
-      setError(message)
+      setError(
+        getApiErrorMessage(
+          err,
+          editingId ? 'Failed to update car model.' : 'Failed to add car model.'
+        )
+      )
     }
   }
 
@@ -99,8 +102,7 @@ const CarManager = () => {
       await deleteCar(id)
       await fetchCars()
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to delete car model'
-      setError(message)
+      setError(getApiErrorMessage(err, 'Failed to delete car model.'))
     } finally {
       setDeletingId(null)
     }

@@ -4,6 +4,7 @@ import type { SlabConfig, SlabTier } from '../../types'
 import Sidebar from '../../components/Sidebar'
 import SlabTable from '../../components/SlabTable'
 import ErrorBanner from '../../components/ErrorBanner'
+import { getApiErrorMessage } from '../../lib/apiError'
 import { FullPageLoader } from '../../components/LoadingSpinner'
 import { Plus, Trash2 } from 'lucide-react'
 
@@ -48,10 +49,15 @@ const SlabManager = () => {
     event.preventDefault()
     if (!label.trim()) return
 
-    await createSlab(label)
-    setLabel('')
-    setShowSlabForm(false)
-    await fetchSlabs()
+    try {
+      setError('')
+      await createSlab(label)
+      setLabel('')
+      setShowSlabForm(false)
+      await fetchSlabs()
+    } catch (err) {
+      setError(getApiErrorMessage(err, 'Failed to create slab.'))
+    }
   }
 
   const handleAddTier = async (event: FormEvent<HTMLFormElement>, slabId: string) => {
@@ -62,24 +68,34 @@ const SlabManager = () => {
     const slab = slabs.find(s => s.id === slabId)
     const sortOrder = (slab?.slab_tiers?.length ?? 0) + 1
 
-    await addTier(slabId, {
-      min_cars: Number(form.min_cars),
-      max_cars: form.max_cars ? Number(form.max_cars) : null,
-      incentive_per_car: Number(form.incentive_per_car),
-      sort_order: sortOrder
-    })
+    try {
+      setError('')
+      await addTier(slabId, {
+        min_cars: Number(form.min_cars),
+        max_cars: form.max_cars ? Number(form.max_cars) : null,
+        incentive_per_car: Number(form.incentive_per_car),
+        sort_order: sortOrder
+      })
 
-    setTierForms((prev) => ({
-      ...prev,
-      [slabId]: { min_cars: '', max_cars: '', incentive_per_car: '' }
-    }))
-    setExpandedSlabId(null)
-    await fetchSlabs()
+      setTierForms((prev) => ({
+        ...prev,
+        [slabId]: { min_cars: '', max_cars: '', incentive_per_car: '' }
+      }))
+      setExpandedSlabId(null)
+      await fetchSlabs()
+    } catch (err) {
+      setError(getApiErrorMessage(err, 'Failed to add tier.'))
+    }
   }
 
   const handleActivate = async (id: string) => {
-    await activateSlab(id)
-    await fetchSlabs()
+    try {
+      setError('')
+      await activateSlab(id)
+      await fetchSlabs()
+    } catch (err) {
+      setError(getApiErrorMessage(err, 'Failed to activate slab.'))
+    }
   }
 
   const handleEditTier = (tier: SlabTier) => {
@@ -105,8 +121,7 @@ const SlabManager = () => {
       setEditTierForm({ min_cars: '', max_cars: '', incentive_per_car: '' })
       await fetchSlabs()
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to update tier'
-      setError(message)
+      setError(getApiErrorMessage(err, 'Failed to update tier.'))
     }
   }
 
@@ -125,8 +140,7 @@ const SlabManager = () => {
       await deleteTier(tierId)
       await fetchSlabs()
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to delete tier'
-      setError(message)
+      setError(getApiErrorMessage(err, 'Failed to delete tier.'))
     } finally {
       setDeletingTierId(null)
     }
@@ -142,8 +156,7 @@ const SlabManager = () => {
       await deleteSlab(slabId)
       await fetchSlabs()
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to delete slab'
-      setError(message)
+      setError(getApiErrorMessage(err, 'Failed to delete slab.'))
     } finally {
       setDeletingSlabId(null)
     }

@@ -3,6 +3,8 @@ import { getCars } from '../../api/cars'
 import { getActiveSlab } from '../../api/slabs'
 import { getSales, upsertSale } from '../../api/sales'
 import Sidebar from '../../components/Sidebar'
+import ErrorBanner from '../../components/ErrorBanner'
+import { getApiErrorMessage } from '../../lib/apiError'
 import { useMobileMenu } from '../../context/MobileMenuContext'
 import CustomSelect from '../../components/CustomSelect'
 import { calculateIncentive } from '../../lib/calculateIncentive'
@@ -43,6 +45,7 @@ const SalesEntry = () => {
   const [salesMap, setSalesMap] = useState<Record<string, number>>({})
   const [saving, setSaving] = useState(false)
   const [successMessage, setSuccessMessage] = useState('')
+  const [saveError, setSaveError] = useState('')
 
   useEffect(() => {
     const loadData = async () => {
@@ -101,6 +104,7 @@ const SalesEntry = () => {
   const handleSave = async () => {
     setSaving(true)
     setSuccessMessage('')
+    setSaveError('')
 
     try {
       const userId = localStorage.getItem('user_id') || ''
@@ -116,8 +120,8 @@ const SalesEntry = () => {
 
       await Promise.all(payloads.map((payload) => upsertSale(payload)))
       setSuccessMessage('Sales saved successfully')
-    } catch (_err) {
-      // Ignored
+    } catch (err) {
+      setSaveError(getApiErrorMessage(err, 'Failed to save sales. Please try again.'))
     } finally {
       setSaving(false)
     }
@@ -180,6 +184,9 @@ const SalesEntry = () => {
         </header>
 
         <div className="space-y-6 px-4 md:px-10 py-8 pb-32 md:pb-28">
+          {saveError && (
+            <ErrorBanner message={saveError} onDismiss={() => setSaveError('')} />
+          )}
           <section className="grid grid-cols-1 gap-4 md:grid-cols-3">
             <div className="rounded-2xl border border-white/[0.08] bg-[#1A1A1A] px-6 py-5">
               <p className="text-xs uppercase tracking-wider text-[#888888]">Total Units</p>
@@ -323,6 +330,9 @@ const SalesEntry = () => {
             </div>
 
             <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-center sm:gap-3 md:w-auto">
+              {saveError && (
+                <p className="text-center text-xs text-[#DC1428] sm:hidden">{saveError}</p>
+              )}
               {successMessage && (
                 <div className="flex items-center justify-center gap-2 rounded-xl border border-[#4ADE80]/30 bg-[#4ADE80]/10 px-4 py-2.5 sm:justify-start">
                   <CheckCircle2 size={16} className="shrink-0 text-[#4ADE80]" />

@@ -26,37 +26,16 @@ export const activateSlab = async (id: string) => {
 }
 
 export const updateTier = async (tierId: string, tierData: unknown) => {
-  try {
-    const response = await apiClient.put(`/slabs/tiers/${tierId}`, tierData)
-    return response.data.data
-  } catch (error) {
-    if (error instanceof Error) {
-      throw new Error(`Failed to update tier: ${error.message}`)
-    }
-    throw new Error('Failed to update tier')
-  }
+  const response = await apiClient.put(`/slabs/tiers/${tierId}`, tierData)
+  return response.data.data
 }
 
 export const deleteTier = async (tierId: string) => {
-  try {
-    const response = await apiClient.delete(`/slabs/tiers/${tierId}`)
-    return response.data.data
-  } catch (error) {
-    if (error instanceof Error) {
-      throw new Error(`Failed to delete tier: ${error.message}`)
-    }
-    throw new Error('Failed to delete tier')
-  }
+  const response = await apiClient.delete(`/slabs/tiers/${tierId}`)
+  return response.data.data
 }
 
 export const deleteSlab = async (slabId: string) => {
-  try {
-    const response = await apiClient.delete(`/slabs/${slabId}`)
-    return response.data.data
-  } catch (error) {
-    if (error instanceof Error) {
-      throw new Error(`Failed to delete slab: ${error.message}`)
-    }
-    throw new Error('Failed to delete slab')
-  }
+  const response = await apiClient.delete(`/slabs/${slabId}`)
+  return response.data.data
 }

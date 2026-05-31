@@ -31,6 +31,7 @@ const Sidebar = () => {
     .join('') || 'U'
 
   const handleLogout = () => {
+    setIsOpen(false)
     localStorage.clear()
     navigate('/login')
   }
@@ -42,14 +43,25 @@ const Sidebar = () => {
 
   return (
     <>
-      {/* Mobile Menu Toggle */}
+      {/* Mobile menu (top-left) */}
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed left-4 top-4 z-50 flex h-10 w-10 items-center justify-center rounded-lg bg-[#DC1428] text-white md:hidden transition-all hover:bg-[#FF1A30]"
+        className="fixed z-50 flex h-10 w-10 items-center justify-center rounded-lg bg-[#DC1428] text-white transition-all hover:bg-[#FF1A30] md:hidden top-[max(1rem,env(safe-area-inset-top))] left-[max(1rem,env(safe-area-inset-left))]"
         aria-label="Toggle menu"
       >
         {isOpen ? <X size={20} /> : <Menu size={20} />}
+      </button>
+
+      {/* Mobile logout (top-right) */}
+      <button
+        type="button"
+        onClick={handleLogout}
+        className="fixed z-50 flex h-10 items-center gap-1.5 rounded-lg border border-white/[0.08] bg-[#1A1A1A] px-3 text-xs font-medium text-white transition-all hover:border-[#DC1428] md:hidden top-[max(1rem,env(safe-area-inset-top))] right-[max(1rem,env(safe-area-inset-right))]"
+        aria-label="Logout"
+      >
+        <LogOut size={16} className="shrink-0 text-[#DC1428]" />
+        <span>Logout</span>
       </button>
 
       {/* Mobile Backdrop */}
@@ -95,9 +107,9 @@ const Sidebar = () => {
           })}
         </nav>
 
-        {/* Mobile: lifted footer — clears browser bottom bar (desktop unchanged) */}
-        <div className="sticky bottom-0 z-10 shrink-0 border-t border-white/[0.08] bg-[#0F0F0F] px-4 pt-4 pb-[max(1.25rem,calc(env(safe-area-inset-bottom)+4.5rem))] shadow-[0_-12px_24px_rgba(0,0,0,0.45)] md:hidden">
-          <div className="mb-4 flex items-center gap-3">
+        {/* Mobile: profile only (logout is top-right on viewport) */}
+        <div className="sticky bottom-0 z-10 shrink-0 border-t border-white/[0.08] bg-[#0F0F0F] px-4 py-4 pb-[max(1rem,calc(env(safe-area-inset-bottom)+1rem))] shadow-[0_-8px_20px_rgba(0,0,0,0.35)] md:hidden">
+          <div className="flex items-center gap-3">
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#DC1428] text-sm font-semibold text-white">
               {initials}
             </div>
@@ -107,16 +119,6 @@ const Sidebar = () => {
               <p className="text-xs capitalize text-[#888888]">{role || 'officer'}</p>
             </div>
           </div>
-
-          <button
-            type="button"
-            onClick={handleLogout}
-            className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#DC1428] px-4 py-3 text-sm font-medium text-white transition-all hover:bg-[#FF1A30]"
-            aria-label="Logout"
-          >
-            <LogOut size={16} />
-            <span>Logout</span>
-          </button>
         </div>
 
         {/* Desktop: pinned footer (unchanged layout) */}
