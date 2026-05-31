@@ -61,7 +61,7 @@ const Sidebar = () => {
       )}
 
       {/* Sidebar */}
-      <aside className="fixed left-0 top-0 z-40 h-screen w-[260px] border-r border-white/[0.08] bg-[#0F0F0F] transition-transform duration-300 flex flex-col md:translate-x-0 md:z-40 md:relative md:w-[260px] md:border-r md:border-white/[0.08]"
+      <aside className="fixed left-0 top-0 z-40 h-screen w-[260px] overflow-y-auto border-r border-white/[0.08] bg-[#0F0F0F] transition-transform duration-300 md:translate-x-0 md:z-40 md:relative md:w-[260px] md:border-r md:border-white/[0.08]"
         style={{
           transform: isOpen ? 'translateX(0)' : 'translateX(-260px)',
         }}
@@ -83,7 +83,7 @@ const Sidebar = () => {
         </div>
         <div className="mx-6 h-px bg-white/[0.08]" />
 
-        <nav className="mt-6 px-3 flex-1 overflow-y-auto">
+        <nav className="mt-6 px-3">
           {items.map((item) => {
             const Icon = item.icon
             const isActive = location.pathname === item.path
@@ -106,7 +106,7 @@ const Sidebar = () => {
           })}
         </nav>
 
-        <div className="mt-auto border-t border-white/[0.08] p-4">
+        <div className="absolute bottom-0 w-full border-t border-white/[0.08] p-4">
           <div className="flex items-center gap-3 mb-4">
             <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#DC1428] text-sm font-semibold text-white">
               {initials}
