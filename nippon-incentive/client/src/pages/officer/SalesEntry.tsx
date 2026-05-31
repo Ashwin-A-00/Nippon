@@ -3,6 +3,7 @@ import { getCars } from '../../api/cars'
 import { getActiveSlab } from '../../api/slabs'
 import { getSales, upsertSale } from '../../api/sales'
 import Sidebar from '../../components/Sidebar'
+import { useMobileMenu } from '../../context/MobileMenuContext'
 import CustomSelect from '../../components/CustomSelect'
 import { calculateIncentive } from '../../lib/calculateIncentive'
 import { formatCurrency } from '../../lib/formatCurrency'
@@ -33,6 +34,7 @@ const years = [
 ]
 
 const SalesEntry = () => {
+  const { isOpen: mobileMenuOpen } = useMobileMenu()
   const today = new Date()
   const [month, setMonth] = useState(today.getMonth() + 1)
   const [year, setYear] = useState(today.getFullYear())
@@ -177,7 +179,7 @@ const SalesEntry = () => {
           </div>
         </header>
 
-        <div className="space-y-6 px-4 md:px-10 py-8 pb-28">
+        <div className="space-y-6 px-4 md:px-10 py-8 pb-32 md:pb-28">
           <section className="grid grid-cols-1 gap-4 md:grid-cols-3">
             <div className="rounded-2xl border border-white/[0.08] bg-[#1A1A1A] px-6 py-5">
               <p className="text-xs uppercase tracking-wider text-[#888888]">Total Units</p>
@@ -304,20 +306,26 @@ const SalesEntry = () => {
           </section>
         </div>
 
-        <div className="fixed bottom-0 left-[260px] right-0 z-30 border-t border-white/[0.08] bg-[#0F0F0F]/95 px-10 py-4 backdrop-blur-md">
-          <div className="flex items-center justify-between gap-4">
-            <div className="hidden sm:block">
+        <div
+          className={`fixed bottom-0 left-0 right-0 z-40 border-t border-white/[0.08] bg-[#0F0F0F]/95 px-4 py-3 backdrop-blur-md pb-[max(0.75rem,env(safe-area-inset-bottom))] md:left-[260px] md:z-30 md:block md:px-10 md:py-4 ${
+            mobileMenuOpen ? 'max-md:hidden' : ''
+          }`}
+        >
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between md:gap-4">
+            <div className="md:block">
               <p className="text-sm font-medium text-white">
                 {totalCars} units ·{' '}
                 <span className="text-[#4ADE80]">{formatCurrency(payout)}</span> projected
               </p>
-              <p className="text-xs text-[#888888]">Changes are not saved until you submit</p>
+              <p className="text-xs text-[#888888] max-md:hidden md:block">
+                Changes are not saved until you submit
+              </p>
             </div>
 
-            <div className="flex w-full items-center gap-3 sm:w-auto">
+            <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-center sm:gap-3 md:w-auto">
               {successMessage && (
-                <div className="flex items-center gap-2 rounded-xl border border-[#4ADE80]/30 bg-[#4ADE80]/10 px-4 py-2.5">
-                  <CheckCircle2 size={16} className="text-[#4ADE80]" />
+                <div className="flex items-center justify-center gap-2 rounded-xl border border-[#4ADE80]/30 bg-[#4ADE80]/10 px-4 py-2.5 sm:justify-start">
+                  <CheckCircle2 size={16} className="shrink-0 text-[#4ADE80]" />
                   <span className="text-sm text-[#4ADE80]">{successMessage}</span>
                 </div>
               )}
@@ -325,7 +333,7 @@ const SalesEntry = () => {
                 type="button"
                 onClick={handleSave}
                 disabled={saving || cars.length === 0}
-                className="ml-auto min-w-[160px] rounded-xl bg-[#DC1428] px-8 py-3 text-sm font-medium text-white transition-all hover:bg-[#FF1A30] disabled:cursor-not-allowed disabled:opacity-50"
+                className="w-full rounded-xl bg-[#DC1428] px-8 py-3.5 text-sm font-medium text-white transition-all hover:bg-[#FF1A30] disabled:cursor-not-allowed disabled:opacity-50 md:ml-auto md:w-auto md:min-w-[160px] md:py-3"
               >
                 {saving ? 'Saving…' : 'Save Sales'}
               </button>

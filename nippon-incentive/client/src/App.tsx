@@ -1,4 +1,5 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
+import { MobileMenuProvider } from './context/MobileMenuContext'
 import ProtectedRoute from './components/ProtectedRoute'
 import Login from './pages/Login'
 import Unauthorized from './pages/Unauthorized'
@@ -10,6 +11,7 @@ import SalesEntry from './pages/officer/SalesEntry'
 
 function App() {
   return (
+    <MobileMenuProvider>
     <Routes>
       <Route path="/login" element={<Login />} />
       <Route path="/unauthorized" element={<Unauthorized />} />
@@ -42,6 +44,7 @@ function App() {
 
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
+    </MobileMenuProvider>
   )
 }
 

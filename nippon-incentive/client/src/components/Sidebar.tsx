@@ -1,11 +1,11 @@
 import { BarChart3, Car, ClipboardList, LayoutDashboard, LogOut, Menu, X } from 'lucide-react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { useState } from 'react'
+import { useMobileMenu } from '../context/MobileMenuContext'
 
 const Sidebar = () => {
   const location = useLocation()
   const navigate = useNavigate()
-  const [isOpen, setIsOpen] = useState(false)
+  const { isOpen, setIsOpen } = useMobileMenu()
 
   const role = localStorage.getItem('role')
   const name = localStorage.getItem('name') || 'User'
@@ -61,16 +61,18 @@ const Sidebar = () => {
       )}
 
       {/* Sidebar */}
-      <aside className={`fixed left-0 top-0 z-40 h-screen w-[260px] overflow-y-auto border-r border-white/[0.08] bg-[#0F0F0F] transition-transform duration-300 md:translate-x-0 ${
-        isOpen ? 'translate-x-0' : '-translate-x-full'
-      }`}>
-        <div className="p-6 pt-20 md:pt-6">
+      <aside
+        className={`fixed left-0 top-0 z-40 flex h-screen w-[260px] flex-col border-r border-white/[0.08] bg-[#0F0F0F] transition-transform duration-300 md:translate-x-0 ${
+          isOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+      >
+        <div className="shrink-0 p-6 pt-20 md:pt-6">
           <h1 className="text-xl font-bold tracking-[0.3em] text-white">NIPPON</h1>
           <p className="mt-0.5 text-xs tracking-[0.4em] text-[#888888]">TOYOTA</p>
           <div className="mt-4 h-px bg-white/[0.08]" />
         </div>
 
-        <nav className="mt-6 px-3">
+        <nav className="mt-6 flex-1 overflow-y-auto px-3 pb-4 md:pb-24">
           {items.map((item) => {
             const Icon = item.icon
             const isActive = location.pathname === item.path
@@ -93,8 +95,9 @@ const Sidebar = () => {
           })}
         </nav>
 
-        <div className="absolute bottom-0 w-full border-t border-white/[0.08] p-4">
-          <div className="flex items-center gap-3 mb-4">
+        {/* Mobile: in-flow footer so logout stays reachable */}
+        <div className="shrink-0 border-t border-white/[0.08] p-4 pb-[max(1rem,env(safe-area-inset-bottom))] md:hidden">
+          <div className="mb-4 flex items-center gap-3">
             <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#DC1428] text-sm font-semibold text-white">
               {initials}
             </div>
@@ -108,7 +111,31 @@ const Sidebar = () => {
           <button
             type="button"
             onClick={handleLogout}
-            className="w-full flex items-center justify-center gap-2 rounded-xl bg-[#DC1428] px-4 py-2.5 text-sm font-medium text-white transition-all hover:bg-[#FF1A30]"
+            className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#DC1428] px-4 py-2.5 text-sm font-medium text-white transition-all hover:bg-[#FF1A30]"
+            aria-label="Logout"
+          >
+            <LogOut size={16} />
+            <span>Logout</span>
+          </button>
+        </div>
+
+        {/* Desktop: pinned footer (unchanged layout) */}
+        <div className="absolute bottom-0 hidden w-full border-t border-white/[0.08] p-4 md:block">
+          <div className="mb-4 flex items-center gap-3">
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#DC1428] text-sm font-semibold text-white">
+              {initials}
+            </div>
+
+            <div className="flex-1">
+              <p className="text-sm font-medium text-white">{name}</p>
+              <p className="text-xs capitalize text-[#888888]">{role || 'officer'}</p>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#DC1428] px-4 py-2.5 text-sm font-medium text-white transition-all hover:bg-[#FF1A30]"
             aria-label="Logout"
           >
             <LogOut size={16} />

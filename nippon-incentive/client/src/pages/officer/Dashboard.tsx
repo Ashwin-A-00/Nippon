@@ -103,7 +103,7 @@ const Dashboard = () => {
           />
         </div>
 
-        <section className="relative w-full rounded-2xl border border-white/[0.08] bg-[#1A1A1A] p-8">
+        <section className="relative w-full rounded-2xl border border-white/[0.08] bg-[#1A1A1A] p-4 md:p-8">
           <h3 className="mb-6 text-xs font-semibold uppercase tracking-wider text-[#888888]">
             Incentive Summary
           </h3>
@@ -120,16 +120,16 @@ const Dashboard = () => {
             </div>
           ) : (
             <div>
-              <div className="grid w-full grid-cols-3 items-center gap-8">
-                <div className="flex flex-col">
+              <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-3 md:items-center md:gap-8">
+                <div className="flex min-w-0 flex-col border-b border-white/[0.08] pb-5 md:border-0 md:pb-0">
                   <span className="text-4xl font-bold text-white">{result?.total_cars ?? 0}</span>
                   <span className="mt-1 text-xs font-medium uppercase tracking-wider text-[#888888]">
                     Total Cars
                   </span>
                 </div>
 
-                <div className="flex flex-col">
-                  <span className="truncate text-2xl font-bold text-[#DC1428]">
+                <div className="flex min-w-0 flex-col border-b border-white/[0.08] pb-5 md:border-0 md:pb-0">
+                  <span className="text-2xl font-bold text-[#DC1428] md:truncate">
                     {result?.tier
                       ? `${result.tier.min_cars}–${result.tier.max_cars ?? '∞'} cars`
                       : 'No tier'}
@@ -139,8 +139,8 @@ const Dashboard = () => {
                   </span>
                 </div>
 
-                <div className="flex flex-col">
-                  <span className="text-3xl font-bold text-[#4ADE80]">
+                <div className="flex min-w-0 flex-col">
+                  <span className="break-all text-2xl font-bold tabular-nums text-[#4ADE80] md:break-normal md:text-3xl">
                     ₹{(result?.payout ?? 0).toLocaleString('en-IN')}
                   </span>
                   <span className="mt-1 text-xs font-medium uppercase tracking-wider text-[#888888]">
