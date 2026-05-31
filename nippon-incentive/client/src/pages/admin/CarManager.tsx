@@ -119,7 +119,7 @@ const CarManager = () => {
             <ErrorBanner message={error} onDismiss={() => setError('')} />
           </div>
         )}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
             <h2 className="text-2xl font-semibold text-white">Car Models</h2>
             <p className="mt-0.5 text-sm text-[#888888]">{cars.length} models</p>
@@ -127,7 +127,7 @@ const CarManager = () => {
           <button
             type="button"
             onClick={() => setShowForm(!showForm)}
-            className="flex items-center gap-2 rounded-xl bg-[#DC1428] px-5 py-2.5 text-sm text-white transition-all hover:bg-[#FF1A30]"
+            className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#DC1428] px-5 py-2.5 text-sm text-white transition-all hover:bg-[#FF1A30] md:w-auto"
           >
             <Plus size={16} />
             <span>Add Model</span>
@@ -141,13 +141,13 @@ const CarManager = () => {
         >
           <form
             onSubmit={handleAddCar}
-            className="rounded-2xl border border-white/[0.08] bg-[#1A1A1A] p-6"
+            className="rounded-2xl border border-white/[0.08] bg-[#1A1A1A] p-4 md:p-6"
           >
             <h3 className="mb-4 text-sm font-medium text-white">
               {editingId ? 'Edit Car Model' : 'New Car Model'}
             </h3>
 
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
               <div>
                 <label className="mb-1 block text-xs font-medium text-[#888888]">
                   Model Name *
@@ -183,17 +183,17 @@ const CarManager = () => {
               </div>
             </div>
 
-            <div className="mt-6 flex justify-end gap-3">
+            <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end sm:gap-3">
               <button
                 type="button"
                 onClick={handleFormClose}
-                className="rounded-xl border border-white/[0.08] bg-[#1A1A1A] px-5 py-2.5 text-sm text-white transition-all hover:border-[#DC1428]"
+                className="w-full rounded-xl border border-white/[0.08] bg-[#1A1A1A] px-5 py-2.5 text-sm text-white transition-all hover:border-[#DC1428] sm:w-auto"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="rounded-xl border border-white/[0.08] bg-[#1A1A1A] px-5 py-2.5 text-sm text-white transition-all hover:border-[#DC1428]"
+                className="w-full rounded-xl border border-white/[0.08] bg-[#1A1A1A] px-5 py-2.5 text-sm text-white transition-all hover:border-[#DC1428] sm:w-auto"
               >
                 {editingId ? 'Update Model' : 'Save Model'}
               </button>
@@ -208,33 +208,90 @@ const CarManager = () => {
               <p className="mt-4 text-sm text-[#888888]">No car models yet</p>
             </div>
           ) : (
-            <div>
-              <div className="grid grid-cols-12 items-center bg-[#222222] px-6 py-3 text-xs font-semibold uppercase tracking-wider text-[#888888]">
-                <div className="col-span-4">Model</div>
-                <div className="col-span-3">Suffix</div>
-                <div className="col-span-3">Variant</div>
-                <div className="col-span-1">Status</div>
-                <div className="col-span-1 text-right">Actions</div>
+            <>
+              {/* Desktop table */}
+              <div className="hidden md:block">
+                <div className="grid grid-cols-12 items-center bg-[#222222] px-6 py-3 text-xs font-semibold uppercase tracking-wider text-[#888888]">
+                  <div className="col-span-4">Model</div>
+                  <div className="col-span-3">Suffix</div>
+                  <div className="col-span-3">Variant</div>
+                  <div className="col-span-1">Status</div>
+                  <div className="col-span-1 text-right">Actions</div>
+                </div>
+
+                <div className="divide-y divide-white/[0.08]">
+                  {cars.map((car) => (
+                    <div
+                      key={car.id}
+                      className="grid grid-cols-12 items-center px-6 py-4 transition-colors hover:bg-[#222222]"
+                    >
+                      <div className="col-span-4 text-sm font-medium text-white">
+                        {car.model_name}
+                      </div>
+                      <div className="col-span-3 text-sm text-[#888888]">
+                        {car.base_suffix || '-'}
+                      </div>
+                      <div className="col-span-3 text-sm text-[#888888]">
+                        {car.variant || '-'}
+                      </div>
+                      <div className="col-span-1">
+                        <span
+                          className={`inline-flex rounded-full px-2.5 py-1 text-xs font-medium ${
+                            car.is_active
+                              ? 'bg-white/[0.08] text-white'
+                              : 'bg-[#222222] text-[#888888]'
+                          }`}
+                        >
+                          {car.is_active ? 'Active' : 'Inactive'}
+                        </span>
+                      </div>
+                      <div className="col-span-1 flex justify-end gap-2">
+                        <button
+                          type="button"
+                          onClick={() => handleEdit(car)}
+                          className="text-[#888888] transition-colors hover:text-[#4ADE80]"
+                          aria-label="Edit car"
+                        >
+                          <Edit2 size={16} />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleDelete(car.id)}
+                          disabled={deletingId === car.id}
+                          className="text-[#888888] transition-colors hover:text-[#DC1428] disabled:cursor-not-allowed disabled:opacity-50"
+                          aria-label="Delete car"
+                        >
+                          <Trash2
+                            size={16}
+                            className={deletingId === car.id ? 'animate-pulse' : ''}
+                          />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
 
-              <div className="divide-y divide-white/[0.08]">
+              {/* Mobile cards */}
+              <div className="divide-y divide-white/[0.08] md:hidden">
                 {cars.map((car) => (
-                  <div
-                    key={car.id}
-                    className="grid grid-cols-12 items-center px-6 py-4 transition-colors hover:bg-[#222222]"
-                  >
-                    <div className="col-span-4 text-sm font-medium text-white">
-                      {car.model_name}
-                    </div>
-                    <div className="col-span-3 text-sm text-[#888888]">
-                      {car.base_suffix || '-'}
-                    </div>
-                    <div className="col-span-3 text-sm text-[#888888]">
-                      {car.variant || '-'}
-                    </div>
-                    <div className="col-span-1">
+                  <div key={car.id} className="p-4">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-medium text-white">{car.model_name}</p>
+                        <dl className="mt-3 space-y-2 text-sm">
+                          <div className="flex justify-between gap-4">
+                            <dt className="text-[#888888]">Suffix</dt>
+                            <dd className="text-right text-white">{car.base_suffix || '—'}</dd>
+                          </div>
+                          <div className="flex justify-between gap-4">
+                            <dt className="text-[#888888]">Variant</dt>
+                            <dd className="text-right text-white">{car.variant || '—'}</dd>
+                          </div>
+                        </dl>
+                      </div>
                       <span
-                        className={`inline-flex rounded-full px-2.5 py-1 text-xs font-medium ${
+                        className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-medium ${
                           car.is_active
                             ? 'bg-white/[0.08] text-white'
                             : 'bg-[#222222] text-[#888888]'
@@ -243,30 +300,33 @@ const CarManager = () => {
                         {car.is_active ? 'Active' : 'Inactive'}
                       </span>
                     </div>
-                    <div className="col-span-1 flex justify-end gap-2">
+
+                    <div className="mt-4 flex gap-2 border-t border-white/[0.08] pt-3">
                       <button
+                        type="button"
                         onClick={() => handleEdit(car)}
-                        className="text-[#888888] transition-colors hover:text-[#4ADE80]"
-                        aria-label="Edit car"
+                        className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-white/[0.08] bg-[#0F0F0F] py-2.5 text-sm font-medium text-white transition-colors hover:border-[#DC1428]"
                       >
                         <Edit2 size={16} />
+                        Edit
                       </button>
                       <button
+                        type="button"
                         onClick={() => handleDelete(car.id)}
                         disabled={deletingId === car.id}
-                        className="text-[#888888] transition-colors hover:text-[#DC1428] disabled:opacity-50 disabled:cursor-not-allowed"
-                        aria-label="Delete car"
+                        className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-white/[0.08] bg-[#0F0F0F] py-2.5 text-sm font-medium text-[#888888] transition-colors hover:border-[#DC1428] hover:text-[#DC1428] disabled:cursor-not-allowed disabled:opacity-50"
                       >
                         <Trash2
                           size={16}
                           className={deletingId === car.id ? 'animate-pulse' : ''}
                         />
+                        Delete
                       </button>
                     </div>
                   </div>
                 ))}
               </div>
-            </div>
+            </>
           )}
         </div>
       </main>

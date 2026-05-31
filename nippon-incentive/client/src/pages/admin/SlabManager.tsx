@@ -168,12 +168,12 @@ const SlabManager = () => {
             <ErrorBanner message={error} onDismiss={() => setError('')} />
           </div>
         )}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <h2 className="text-2xl font-semibold text-white">Incentive Slabs</h2>
           <button
             type="button"
             onClick={() => setShowSlabForm(!showSlabForm)}
-            className="flex items-center gap-2 rounded-xl bg-[#DC1428] px-5 py-2.5 text-sm font-medium text-white transition-all hover:bg-[#FF1A30]"
+            className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#DC1428] px-5 py-2.5 text-sm font-medium text-white transition-all hover:bg-[#FF1A30] md:w-auto"
           >
             <Plus size={16} />
             <span>New Slab</span>
@@ -187,10 +187,10 @@ const SlabManager = () => {
         >
           <form
             onSubmit={handleCreateSlab}
-            className="rounded-2xl border border-white/[0.08] bg-[#1A1A1A] p-6"
+            className="rounded-2xl border border-white/[0.08] bg-[#1A1A1A] p-4 md:p-6"
           >
             <h3 className="mb-4 text-sm font-medium text-white">Create New Slab</h3>
-            <div className="flex flex-col items-end gap-3 sm:flex-row">
+            <div className="flex flex-col gap-3 md:flex-row md:items-end">
               <div className="flex-1">
                 <label className="mb-1.5 block text-xs font-medium text-[#888888]">Slab Label</label>
                 <input
@@ -202,17 +202,17 @@ const SlabManager = () => {
                   className={inputClass}
                 />
               </div>
-              <div className="flex gap-2">
+              <div className="flex w-full flex-col-reverse gap-2 md:w-auto md:flex-row">
                 <button
                   type="button"
                   onClick={() => setShowSlabForm(false)}
-                  className="rounded-xl border border-white/[0.08] bg-[#1A1A1A] px-5 py-3 text-sm text-white transition-all hover:border-[#DC1428]"
+                  className="w-full rounded-xl border border-white/[0.08] bg-[#1A1A1A] px-5 py-3 text-sm text-white transition-all hover:border-[#DC1428] md:w-auto"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="rounded-xl border border-white/[0.08] bg-[#1A1A1A] px-6 py-3 text-sm font-medium text-white transition-all hover:border-[#DC1428]"
+                  className="w-full rounded-xl border border-white/[0.08] bg-[#1A1A1A] px-6 py-3 text-sm font-medium text-white transition-all hover:border-[#DC1428] md:w-auto"
                 >
                   Create
                 </button>
@@ -234,16 +234,16 @@ const SlabManager = () => {
             return (
               <article
                 key={slab.id}
-                className="w-full rounded-2xl border border-white/[0.08] bg-[#1A1A1A] p-6"
+                className="w-full rounded-2xl border border-white/[0.08] bg-[#1A1A1A] p-4 md:p-6"
               >
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h3 className="text-lg font-semibold text-white">{slab.label}</h3>
+                <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+                  <div className="min-w-0 flex-1">
+                    <h3 className="break-words text-lg font-semibold text-white">{slab.label}</h3>
                     <p className="mt-0.5 text-xs text-[#888888]">
                       Created: {getFormattedDate(slab.created_at)}
                     </p>
                   </div>
-                  <div className="flex items-center gap-3">
+                  <div className="flex shrink-0 items-center gap-2 md:gap-3">
                     {slab.is_active ? (
                       <span className="rounded-full border border-[#DC1428]/30 bg-[rgba(220,20,40,0.08)] px-3 py-1 text-xs font-medium uppercase tracking-wider text-[#DC1428]">
                         ACTIVE
@@ -252,15 +252,16 @@ const SlabManager = () => {
                       <button
                         type="button"
                         onClick={() => handleActivate(slab.id)}
-                        className="rounded-xl border border-white/[0.08] bg-[#1A1A1A] px-4 py-1.5 text-sm font-medium text-white transition-all hover:border-[#DC1428]"
+                        className="flex-1 rounded-xl border border-white/[0.08] bg-[#1A1A1A] px-4 py-2 text-sm font-medium text-white transition-all hover:border-[#DC1428] md:flex-none md:py-1.5"
                       >
                         Activate
                       </button>
                     )}
                     <button
+                      type="button"
                       onClick={() => handleDeleteSlab(slab.id)}
                       disabled={deletingSlabId === slab.id}
-                      className="text-[#888888] transition-colors hover:text-[#DC1428] disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/[0.08] text-[#888888] transition-colors hover:border-[#DC1428] hover:text-[#DC1428] disabled:cursor-not-allowed disabled:opacity-50 md:h-auto md:w-auto md:border-0"
                       aria-label="Delete slab"
                     >
                       <Trash2
@@ -278,7 +279,7 @@ const SlabManager = () => {
                     <h4 className="mb-3 text-xs font-semibold uppercase tracking-wider text-[#888888]">
                       Edit Tier Details
                     </h4>
-                    <div className="grid grid-cols-3 gap-3">
+                    <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
                       <div>
                         <label className="mb-1 block text-[10px] font-medium text-[#888888]">
                           Min Cars *
@@ -322,18 +323,18 @@ const SlabManager = () => {
                         />
                       </div>
                     </div>
-                    <div className="mt-3 flex justify-end gap-2">
+                    <div className="mt-4 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
                       <button
                         type="button"
                         onClick={handleCancelEdit}
-                        className="rounded-lg border border-white/[0.08] bg-[#1A1A1A] px-3 py-1.5 text-xs text-white transition-all hover:border-[#DC1428]"
+                        className="w-full rounded-lg border border-white/[0.08] bg-[#1A1A1A] px-3 py-2.5 text-sm text-white transition-all hover:border-[#DC1428] sm:w-auto sm:py-1.5 sm:text-xs"
                       >
                         Cancel
                       </button>
                       <button
                         type="button"
                         onClick={handleSaveTier}
-                        className="rounded-lg border border-white/[0.08] bg-[#1A1A1A] px-3 py-1.5 text-xs text-white transition-all hover:border-[#DC1428]"
+                        className="w-full rounded-lg border border-white/[0.08] bg-[#1A1A1A] px-3 py-2.5 text-sm text-white transition-all hover:border-[#DC1428] sm:w-auto sm:py-1.5 sm:text-xs"
                       >
                         Save
                       </button>
@@ -377,7 +378,7 @@ const SlabManager = () => {
                       <h4 className="mb-3 text-xs font-semibold uppercase tracking-wider text-[#888888]">
                         New Tier Details
                       </h4>
-                      <div className="grid grid-cols-3 gap-3">
+                      <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
                         <div>
                           <label className="mb-1 block text-[10px] font-medium text-[#888888]">
                             Min Cars *
@@ -431,17 +432,17 @@ const SlabManager = () => {
                         </div>
                       </div>
 
-                      <div className="mt-4 flex justify-end gap-3">
+                      <div className="mt-4 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end sm:gap-3">
                         <button
                           type="button"
                           onClick={() => setExpandedSlabId(null)}
-                          className="rounded-xl border border-white/[0.08] bg-[#1A1A1A] px-4 py-2 text-sm text-white transition-all hover:border-[#DC1428]"
+                          className="w-full rounded-xl border border-white/[0.08] bg-[#1A1A1A] px-4 py-2.5 text-sm text-white transition-all hover:border-[#DC1428] sm:w-auto sm:py-2"
                         >
                           Cancel
                         </button>
                         <button
                           type="submit"
-                          className="rounded-xl border border-white/[0.08] bg-[#1A1A1A] px-5 py-2 text-sm text-white transition-all hover:border-[#DC1428]"
+                          className="w-full rounded-xl border border-white/[0.08] bg-[#1A1A1A] px-5 py-2.5 text-sm text-white transition-all hover:border-[#DC1428] sm:w-auto sm:py-2"
                         >
                           Add Tier
                         </button>
