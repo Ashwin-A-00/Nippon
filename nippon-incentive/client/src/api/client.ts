@@ -1,8 +1,9 @@
 import axios from 'axios'
-import { getApiErrorMessage } from '../lib/apiError'
+import { getApiErrorMessage, type ApiError } from '../lib/apiError'
 
 const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_URL
+  baseURL: import.meta.env.VITE_API_URL,
+  timeout: 30000
 })
 
 apiClient.interceptors.request.use((config) => {
@@ -20,12 +21,12 @@ apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
     const message = getApiErrorMessage(error)
-    const apiError = new Error(message) as Error & {
-      status?: number
-      isAxiosError?: boolean
+    const apiError = new Error(message) as ApiError
+
+    if (axios.isAxiosError(error)) {
+      apiError.status = error.response?.status
     }
-    apiError.status = error.response?.status
-    apiError.isAxiosError = true
+
     return Promise.reject(apiError)
   }
 )

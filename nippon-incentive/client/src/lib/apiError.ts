@@ -14,16 +14,41 @@ const STATUS_FALLBACKS: Record<number, string> = {
 const isAxiosStatusMessage = (message: string) =>
   /^request failed with status code \d+$/i.test(message.trim())
 
+const extractApiMessage = (data: unknown): string => {
+  if (!data) return ''
+  if (typeof data === 'string') return ''
+  if (typeof data === 'object' && 'message' in data) {
+    const message = (data as { message?: unknown }).message
+    return typeof message === 'string' ? message.trim() : ''
+  }
+  return ''
+}
+
+export type ApiError = Error & { status?: number }
+
 export const getApiErrorMessage = (
   error: unknown,
   fallback = 'Something went wrong. Please try again.'
 ): string => {
+  const statusFromEnriched = (error as ApiError)?.status
+
+  if (statusFromEnriched && STATUS_FALLBACKS[statusFromEnriched]) {
+    if (statusFromEnriched === 401) {
+      return 'Incorrect email or password.'
+    }
+    const enrichedMessage = error instanceof Error ? error.message.trim() : ''
+    if (
+      enrichedMessage &&
+      !isAxiosStatusMessage(enrichedMessage) &&
+      enrichedMessage !== STATUS_FALLBACKS[statusFromEnriched]
+    ) {
+      return enrichedMessage
+    }
+    return STATUS_FALLBACKS[statusFromEnriched]
+  }
+
   if (axios.isAxiosError(error)) {
-    const data = error.response?.data as { message?: string } | undefined
-    const apiMessage =
-      typeof data?.message === 'string' && data.message.trim()
-        ? data.message.trim()
-        : ''
+    const apiMessage = extractApiMessage(error.response?.data)
 
     if (apiMessage && !isAxiosStatusMessage(apiMessage)) {
       return apiMessage
@@ -35,6 +60,9 @@ export const getApiErrorMessage = (
     }
 
     if (!error.response) {
+      if (error.code === 'ECONNABORTED') {
+        return 'The request timed out. Please try again.'
+      }
       return 'Unable to reach the server. Check your connection and try again.'
     }
   }

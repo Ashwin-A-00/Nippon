@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import { Eye, EyeOff } from 'lucide-react'
 import { ButtonLoader } from '../components/LoadingSpinner'
-import { getApiErrorMessage } from '../lib/apiError'
+import { getApiErrorMessage, type ApiError } from '../lib/apiError'
 
 const inputClass =
   'w-full rounded-xl border border-white/[0.08] bg-[#1A1A1A] px-4 py-3 text-sm text-white outline-none transition-all focus:border-[#DC1428] focus:ring-2 focus:ring-[#DC1428]/20'
@@ -31,7 +31,12 @@ const Login = () => {
         navigate('/officer')
       }
     } catch (err) {
-      setError(getApiErrorMessage(err, 'Unable to sign in. Please try again.'))
+      const apiErr = err as ApiError
+      if (apiErr.status === 401) {
+        setError('Incorrect email or password.')
+      } else {
+        setError(getApiErrorMessage(err, 'Unable to sign in. Please try again.'))
+      }
     } finally {
       setLoading(false)
     }
