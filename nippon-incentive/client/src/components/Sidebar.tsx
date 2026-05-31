@@ -62,7 +62,7 @@ const Sidebar = () => {
 
       {/* Sidebar */}
       <aside
-        className={`fixed left-0 top-0 z-40 flex h-screen w-[260px] flex-col border-r border-white/[0.08] bg-[#0F0F0F] transition-transform duration-300 md:translate-x-0 ${
+        className={`fixed left-0 top-0 z-40 flex h-[100dvh] w-[260px] flex-col border-r border-white/[0.08] bg-[#0F0F0F] transition-transform duration-300 md:h-screen md:translate-x-0 ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
@@ -72,7 +72,7 @@ const Sidebar = () => {
           <div className="mt-4 h-px bg-white/[0.08]" />
         </div>
 
-        <nav className="mt-6 flex-1 overflow-y-auto px-3 pb-4 md:pb-24">
+        <nav className="mt-6 min-h-0 flex-1 overflow-y-auto px-3 pb-2 md:pb-24">
           {items.map((item) => {
             const Icon = item.icon
             const isActive = location.pathname === item.path
@@ -95,15 +95,15 @@ const Sidebar = () => {
           })}
         </nav>
 
-        {/* Mobile: in-flow footer so logout stays reachable */}
-        <div className="shrink-0 border-t border-white/[0.08] p-4 pb-[max(1rem,env(safe-area-inset-bottom))] md:hidden">
+        {/* Mobile: lifted footer — clears browser bottom bar (desktop unchanged) */}
+        <div className="sticky bottom-0 z-10 shrink-0 border-t border-white/[0.08] bg-[#0F0F0F] px-4 pt-4 pb-[max(1.25rem,calc(env(safe-area-inset-bottom)+4.5rem))] shadow-[0_-12px_24px_rgba(0,0,0,0.45)] md:hidden">
           <div className="mb-4 flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#DC1428] text-sm font-semibold text-white">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#DC1428] text-sm font-semibold text-white">
               {initials}
             </div>
 
-            <div className="flex-1">
-              <p className="text-sm font-medium text-white">{name}</p>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm font-medium text-white">{name}</p>
               <p className="text-xs capitalize text-[#888888]">{role || 'officer'}</p>
             </div>
           </div>
@@ -111,7 +111,7 @@ const Sidebar = () => {
           <button
             type="button"
             onClick={handleLogout}
-            className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#DC1428] px-4 py-2.5 text-sm font-medium text-white transition-all hover:bg-[#FF1A30]"
+            className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#DC1428] px-4 py-3 text-sm font-medium text-white transition-all hover:bg-[#FF1A30]"
             aria-label="Logout"
           >
             <LogOut size={16} />
