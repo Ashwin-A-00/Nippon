@@ -80,7 +80,7 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-[#0F0F0F]">
       <Sidebar />
-      <main className="ml-[260px] min-h-screen bg-[#0F0F0F] p-8">
+      <main className="ml-0 md:ml-[260px] min-h-screen bg-[#0F0F0F] p-4 md:p-8 pt-20 md:pt-8">
         <div>
           <h2 className="text-2xl font-semibold text-white">Good morning, {name}</h2>
           <p className="mt-1 text-sm text-[#888888]">Track your performance and incentives</p>
@@ -88,7 +88,7 @@ const Dashboard = () => {
 
         <div className="my-6 h-px bg-white/[0.08]" />
 
-        <div className="mb-6 flex max-w-xs gap-3">
+        <div className="mb-6 flex flex-col sm:flex-row max-w-xs gap-3">
           <CustomSelect
             value={month}
             onChange={(val) => setMonth(Number(val))}
@@ -103,7 +103,7 @@ const Dashboard = () => {
           />
         </div>
 
-        <section className="relative w-full rounded-2xl border border-white/[0.08] bg-[#1A1A1A] p-8">
+        <section className="relative w-full rounded-2xl border border-white/[0.08] bg-[#1A1A1A] p-4 md:p-8">
           <h3 className="mb-6 text-xs font-semibold uppercase tracking-wider text-[#888888]">
             Incentive Summary
           </h3>
@@ -120,7 +120,7 @@ const Dashboard = () => {
             </div>
           ) : (
             <div>
-              <div className="grid w-full grid-cols-3 items-center gap-8">
+              <div className="grid w-full grid-cols-1 md:grid-cols-3 items-center gap-6 md:gap-8">
                 <div className="flex flex-col">
                   <span className="text-4xl font-bold text-white">{result?.total_cars ?? 0}</span>
                   <span className="mt-1 text-xs font-medium uppercase tracking-wider text-[#888888]">
@@ -128,7 +128,7 @@ const Dashboard = () => {
                   </span>
                 </div>
 
-                <div className="flex flex-col">
+                <div className="hidden md:flex flex-col">
                   <span className="truncate text-2xl font-bold text-[#DC1428]">
                     {result?.tier
                       ? `${result.tier.min_cars}–${result.tier.max_cars ?? '∞'} cars`

@@ -142,9 +142,9 @@ const SalesEntry = () => {
     <div className="min-h-screen bg-[#0F0F0F]">
       <Sidebar />
 
-      <main className="ml-[260px] min-h-screen bg-[#0F0F0F]">
-        <header className="border-b border-white/[0.08] bg-[#1A1A1A] px-10 py-6">
-          <div className="flex flex-wrap items-end justify-between gap-6">
+      <main className="ml-0 md:ml-[260px] min-h-screen bg-[#0F0F0F]">
+        <header className="border-b border-white/[0.08] bg-[#1A1A1A] px-4 md:px-10 py-4 md:py-6 pt-20 md:pt-6">
+          <div className="flex flex-col md:flex-row flex-wrap items-start md:items-end justify-between gap-6">
             <div>
               <p className="text-xs font-medium uppercase tracking-[0.2em] text-[#888888]">
                 Sales Entry
@@ -157,7 +157,7 @@ const SalesEntry = () => {
               </p>
             </div>
 
-            <div className="flex items-center gap-3 rounded-2xl border border-white/[0.08] bg-[#0F0F0F] px-4 py-3">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 rounded-2xl border border-white/[0.08] bg-[#0F0F0F] px-4 py-3">
               <span className="text-xs font-medium uppercase tracking-wider text-[#888888]">
                 Period
               </span>
@@ -165,19 +165,19 @@ const SalesEntry = () => {
                 value={month}
                 onChange={(val) => setMonth(Number(val))}
                 options={months}
-                className="w-36"
+                className="w-full sm:w-36"
               />
               <CustomSelect
                 value={year}
                 onChange={(val) => setYear(Number(val))}
                 options={years}
-                className="w-28"
+                className="w-full sm:w-28"
               />
             </div>
           </div>
         </header>
 
-        <div className="space-y-6 px-10 py-8 pb-28">
+        <div className="space-y-6 px-4 md:px-10 py-6 md:py-8 pb-28">
           <section className="grid grid-cols-1 gap-4 md:grid-cols-3">
             <div className="rounded-2xl border border-white/[0.08] bg-[#1A1A1A] px-6 py-5">
               <p className="text-xs uppercase tracking-wider text-[#888888]">Total Units</p>
@@ -304,17 +304,17 @@ const SalesEntry = () => {
           </section>
         </div>
 
-        <div className="fixed bottom-0 left-[260px] right-0 z-30 border-t border-white/[0.08] bg-[#0F0F0F]/95 px-10 py-4 backdrop-blur-md">
-          <div className="flex items-center justify-between gap-4">
-            <div className="hidden sm:block">
-              <p className="text-sm font-medium text-white">
+        <div className="fixed bottom-0 left-0 md:left-[260px] right-0 z-30 border-t border-white/[0.08] bg-[#0F0F0F]/95 px-4 md:px-10 py-4 backdrop-blur-md">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div className="hidden sm:block text-sm">
+              <p className="font-medium text-white">
                 {totalCars} units ·{' '}
                 <span className="text-[#4ADE80]">{formatCurrency(payout)}</span> projected
               </p>
               <p className="text-xs text-[#888888]">Changes are not saved until you submit</p>
             </div>
 
-            <div className="flex w-full items-center gap-3 sm:w-auto">
+            <div className="flex w-full items-center gap-3 md:w-auto">
               {successMessage && (
                 <div className="flex items-center gap-2 rounded-xl border border-[#4ADE80]/30 bg-[#4ADE80]/10 px-4 py-2.5">
                   <CheckCircle2 size={16} className="text-[#4ADE80]" />

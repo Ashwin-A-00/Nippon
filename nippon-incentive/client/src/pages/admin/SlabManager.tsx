@@ -162,18 +162,18 @@ const SlabManager = () => {
   return (
     <div className="min-h-screen bg-[#0F0F0F]">
       <Sidebar />
-      <main className="ml-[260px] min-h-screen bg-[#0F0F0F] p-8">
+      <main className="ml-0 md:ml-[260px] min-h-screen bg-[#0F0F0F] p-4 md:p-8 pt-20 md:pt-8">
         {error && (
           <div className="mb-4">
             <ErrorBanner message={error} onDismiss={() => setError('')} />
           </div>
         )}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <h2 className="text-2xl font-semibold text-white">Incentive Slabs</h2>
           <button
             type="button"
             onClick={() => setShowSlabForm(!showSlabForm)}
-            className="flex items-center gap-2 rounded-xl bg-[#DC1428] px-5 py-2.5 text-sm font-medium text-white transition-all hover:bg-[#FF1A30]"
+            className="flex items-center gap-2 rounded-xl bg-[#DC1428] px-5 py-2.5 text-sm font-medium text-white transition-all hover:bg-[#FF1A30] w-full sm:w-auto justify-center sm:justify-start"
           >
             <Plus size={16} />
             <span>New Slab</span>
@@ -340,11 +340,13 @@ const SlabManager = () => {
                     </div>
                   </div>
                 ) : (
-                  <SlabTable
-                    tiers={slab.slab_tiers}
-                    onEdit={handleEditTier}
-                    onDelete={handleDeleteTier}
-                  />
+                  <div className="overflow-x-auto">
+                    <SlabTable
+                      tiers={slab.slab_tiers}
+                      onEdit={handleEditTier}
+                      onDelete={handleDeleteTier}
+                    />
+                  </div>
                 )}
 
                 <div className="mt-4">
