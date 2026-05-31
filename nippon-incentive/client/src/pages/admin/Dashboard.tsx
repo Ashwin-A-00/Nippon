@@ -71,7 +71,7 @@ const Dashboard = () => {
 
         <div className="my-6 h-px bg-white/[0.08]" />
 
-        <section className="grid w-full grid-cols-1 sm:grid-cols-2 gap-6">
+        <section className="grid w-full grid-cols-2 gap-6">
           <div className="h-full w-full">
             <StatCard
               label="Car Models"
@@ -95,7 +95,7 @@ const Dashboard = () => {
           <h3 className="mb-4 text-xs font-medium uppercase tracking-wider text-[#888888]">
             Quick Actions
           </h3>
-          <div className="grid w-full grid-cols-1 sm:grid-cols-2 gap-6">
+          <div className="grid w-full grid-cols-2 gap-6">
             <div
               onClick={() => navigate('/admin/cars')}
               className="group flex h-full w-full cursor-pointer flex-col justify-between rounded-2xl border border-white/[0.08] bg-[#1A1A1A] p-6 transition-all duration-200 hover:border-[#DC1428] hover:bg-[#222222]"

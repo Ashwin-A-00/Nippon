@@ -119,7 +119,7 @@ const CarManager = () => {
             <ErrorBanner message={error} onDismiss={() => setError('')} />
           </div>
         )}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="flex items-center justify-between">
           <div>
             <h2 className="text-2xl font-semibold text-white">Car Models</h2>
             <p className="mt-0.5 text-sm text-[#888888]">{cars.length} models</p>
@@ -127,7 +127,7 @@ const CarManager = () => {
           <button
             type="button"
             onClick={() => setShowForm(!showForm)}
-            className="flex items-center gap-2 rounded-xl bg-[#DC1428] px-5 py-2.5 text-sm text-white transition-all hover:bg-[#FF1A30] w-full sm:w-auto justify-center sm:justify-start"
+            className="flex items-center gap-2 rounded-xl bg-[#DC1428] px-5 py-2.5 text-sm text-white transition-all hover:bg-[#FF1A30]"
           >
             <Plus size={16} />
             <span>Add Model</span>
@@ -147,7 +147,7 @@ const CarManager = () => {
               {editingId ? 'Edit Car Model' : 'New Car Model'}
             </h3>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="grid grid-cols-3 gap-3">
               <div>
                 <label className="mb-1 block text-xs font-medium text-[#888888]">
                   Model Name *
@@ -183,7 +183,7 @@ const CarManager = () => {
               </div>
             </div>
 
-            <div className="mt-6 flex flex-col sm:flex-row justify-end gap-3">
+            <div className="mt-6 flex justify-end gap-3">
               <button
                 type="button"
                 onClick={handleFormClose}
@@ -201,7 +201,7 @@ const CarManager = () => {
           </form>
         </div>
 
-        <div className="mt-6 w-full">
+        <div className="mt-6 w-full overflow-hidden rounded-2xl border border-white/[0.08] bg-[#1A1A1A]">
           {cars.length === 0 ? (
             <div className="flex flex-col items-center justify-center px-4 py-16">
               <Car className="text-[#444444]" size={48} />
@@ -209,117 +209,59 @@ const CarManager = () => {
             </div>
           ) : (
             <div>
-              {/* Desktop Table - Hidden on mobile */}
-              <div className="hidden md:block overflow-hidden rounded-2xl border border-white/[0.08] bg-[#1A1A1A]">
-                <div className="grid grid-cols-12 items-center bg-[#222222] px-6 py-3 text-xs font-semibold uppercase tracking-wider text-[#888888]">
-                  <div className="col-span-4">Model</div>
-                  <div className="col-span-3">Suffix</div>
-                  <div className="col-span-3">Variant</div>
-                  <div className="col-span-1">Status</div>
-                  <div className="col-span-1 text-right">Actions</div>
-                </div>
-
-                <div className="divide-y divide-white/[0.08]">
-                  {cars.map((car) => (
-                    <div
-                      key={car.id}
-                      className="grid grid-cols-12 items-center px-6 py-4 transition-colors hover:bg-[#222222]"
-                    >
-                      <div className="col-span-4 text-sm font-medium text-white">
-                        {car.model_name}
-                      </div>
-                      <div className="col-span-3 text-sm text-[#888888]">
-                        {car.base_suffix || '-'}
-                      </div>
-                      <div className="col-span-3 text-sm text-[#888888]">
-                        {car.variant || '-'}
-                      </div>
-                      <div className="col-span-1">
-                        <span
-                          className={`inline-flex rounded-full px-2.5 py-1 text-xs font-medium ${
-                            car.is_active
-                              ? 'bg-white/[0.08] text-white'
-                              : 'bg-[#222222] text-[#888888]'
-                          }`}
-                        >
-                          {car.is_active ? 'Active' : 'Inactive'}
-                        </span>
-                      </div>
-                      <div className="col-span-1 flex justify-end gap-2">
-                        <button
-                          onClick={() => handleEdit(car)}
-                          className="text-[#888888] transition-colors hover:text-[#4ADE80]"
-                          aria-label="Edit car"
-                        >
-                          <Edit2 size={16} />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(car.id)}
-                          disabled={deletingId === car.id}
-                          className="text-[#888888] transition-colors hover:text-[#DC1428] disabled:opacity-50 disabled:cursor-not-allowed"
-                          aria-label="Delete car"
-                        >
-                          <Trash2
-                            size={16}
-                            className={deletingId === car.id ? 'animate-pulse' : ''}
-                          />
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+              <div className="grid grid-cols-12 items-center bg-[#222222] px-6 py-3 text-xs font-semibold uppercase tracking-wider text-[#888888]">
+                <div className="col-span-4">Model</div>
+                <div className="col-span-3">Suffix</div>
+                <div className="col-span-3">Variant</div>
+                <div className="col-span-1">Status</div>
+                <div className="col-span-1 text-right">Actions</div>
               </div>
 
-              {/* Mobile Cards - Hidden on desktop */}
-              <div className="md:hidden space-y-3">
+              <div className="divide-y divide-white/[0.08]">
                 {cars.map((car) => (
                   <div
                     key={car.id}
-                    className="rounded-xl border border-white/[0.08] bg-[#1A1A1A] p-4"
+                    className="grid grid-cols-12 items-center px-6 py-4 transition-colors hover:bg-[#222222]"
                   >
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="flex-1">
-                        <h3 className="font-medium text-white">{car.model_name}</h3>
-                        <div className="mt-2 space-y-1">
-                          <p className="text-xs text-[#888888]">
-                            Suffix: <span className="text-white">{car.base_suffix || '-'}</span>
-                          </p>
-                          <p className="text-xs text-[#888888]">
-                            Variant: <span className="text-white">{car.variant || '-'}</span>
-                          </p>
-                        </div>
-                        <div className="mt-3">
-                          <span
-                            className={`inline-flex rounded-full px-2.5 py-1 text-xs font-medium ${
-                              car.is_active
-                                ? 'bg-white/[0.08] text-white'
-                                : 'bg-[#222222] text-[#888888]'
-                            }`}
-                          >
-                            {car.is_active ? 'Active' : 'Inactive'}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => handleEdit(car)}
-                          className="text-[#888888] transition-colors hover:text-[#4ADE80]"
-                          aria-label="Edit car"
-                        >
-                          <Edit2 size={18} />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(car.id)}
-                          disabled={deletingId === car.id}
-                          className="text-[#888888] transition-colors hover:text-[#DC1428] disabled:opacity-50 disabled:cursor-not-allowed"
-                          aria-label="Delete car"
-                        >
-                          <Trash2
-                            size={18}
-                            className={deletingId === car.id ? 'animate-pulse' : ''}
-                          />
-                        </button>
-                      </div>
+                    <div className="col-span-4 text-sm font-medium text-white">
+                      {car.model_name}
+                    </div>
+                    <div className="col-span-3 text-sm text-[#888888]">
+                      {car.base_suffix || '-'}
+                    </div>
+                    <div className="col-span-3 text-sm text-[#888888]">
+                      {car.variant || '-'}
+                    </div>
+                    <div className="col-span-1">
+                      <span
+                        className={`inline-flex rounded-full px-2.5 py-1 text-xs font-medium ${
+                          car.is_active
+                            ? 'bg-white/[0.08] text-white'
+                            : 'bg-[#222222] text-[#888888]'
+                        }`}
+                      >
+                        {car.is_active ? 'Active' : 'Inactive'}
+                      </span>
+                    </div>
+                    <div className="col-span-1 flex justify-end gap-2">
+                      <button
+                        onClick={() => handleEdit(car)}
+                        className="text-[#888888] transition-colors hover:text-[#4ADE80]"
+                        aria-label="Edit car"
+                      >
+                        <Edit2 size={16} />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(car.id)}
+                        disabled={deletingId === car.id}
+                        className="text-[#888888] transition-colors hover:text-[#DC1428] disabled:opacity-50 disabled:cursor-not-allowed"
+                        aria-label="Delete car"
+                      >
+                        <Trash2
+                          size={16}
+                          className={deletingId === car.id ? 'animate-pulse' : ''}
+                        />
+                      </button>
                     </div>
                   </div>
                 ))}

@@ -168,12 +168,12 @@ const SlabManager = () => {
             <ErrorBanner message={error} onDismiss={() => setError('')} />
           </div>
         )}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="flex items-center justify-between">
           <h2 className="text-2xl font-semibold text-white">Incentive Slabs</h2>
           <button
             type="button"
             onClick={() => setShowSlabForm(!showSlabForm)}
-            className="flex items-center gap-2 rounded-xl bg-[#DC1428] px-5 py-2.5 text-sm font-medium text-white transition-all hover:bg-[#FF1A30] w-full sm:w-auto justify-center sm:justify-start"
+            className="flex items-center gap-2 rounded-xl bg-[#DC1428] px-5 py-2.5 text-sm font-medium text-white transition-all hover:bg-[#FF1A30]"
           >
             <Plus size={16} />
             <span>New Slab</span>
@@ -340,13 +340,11 @@ const SlabManager = () => {
                     </div>
                   </div>
                 ) : (
-                  <div className="overflow-x-auto">
-                    <SlabTable
-                      tiers={slab.slab_tiers}
-                      onEdit={handleEditTier}
-                      onDelete={handleDeleteTier}
-                    />
-                  </div>
+                  <SlabTable
+                    tiers={slab.slab_tiers}
+                    onEdit={handleEditTier}
+                    onDelete={handleDeleteTier}
+                  />
                 )}
 
                 <div className="mt-4">

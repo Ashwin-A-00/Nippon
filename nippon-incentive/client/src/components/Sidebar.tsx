@@ -42,46 +42,33 @@ const Sidebar = () => {
 
   return (
     <>
-      {/* Hamburger Button - Mobile Only */}
+      {/* Mobile Menu Toggle */}
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed top-4 left-4 z-40 md:hidden bg-[#1A1A1A] border border-white/[0.08] rounded-lg p-2 text-white hover:bg-[#222222] transition-all"
+        className="fixed left-4 top-4 z-50 flex h-10 w-10 items-center justify-center rounded-lg bg-[#DC1428] text-white md:hidden transition-all hover:bg-[#FF1A30]"
         aria-label="Toggle menu"
       >
-        <Menu size={20} />
+        {isOpen ? <X size={20} /> : <Menu size={20} />}
       </button>
 
-      {/* Overlay - Mobile Only */}
+      {/* Mobile Backdrop */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-30 md:hidden"
+          className="fixed inset-0 z-30 bg-black/50 md:hidden"
           onClick={() => setIsOpen(false)}
         />
       )}
 
       {/* Sidebar */}
-      <aside className="fixed left-0 top-0 z-40 h-screen w-[260px] overflow-y-auto border-r border-white/[0.08] bg-[#0F0F0F] transition-transform duration-300 md:translate-x-0 md:z-40 md:relative md:w-[260px] md:border-r md:border-white/[0.08]"
-        style={{
-          transform: isOpen ? 'translateX(0)' : 'translateX(-260px)',
-        }}
-      >
-        <div className="p-6 flex items-center justify-between">
-          <div>
-            <h1 className="text-xl font-bold tracking-[0.3em] text-white">NIPPON</h1>
-            <p className="mt-0.5 text-xs tracking-[0.4em] text-[#888888]">TOYOTA</p>
-          </div>
-          {/* Close button - Mobile Only */}
-          <button
-            type="button"
-            onClick={() => setIsOpen(false)}
-            className="md:hidden text-[#888888] hover:text-white transition-colors"
-            aria-label="Close menu"
-          >
-            <X size={20} />
-          </button>
+      <aside className={`fixed left-0 top-0 z-40 h-screen w-[260px] overflow-y-auto border-r border-white/[0.08] bg-[#0F0F0F] transition-transform duration-300 md:translate-x-0 ${
+        isOpen ? 'translate-x-0' : '-translate-x-full'
+      }`}>
+        <div className="p-6 pt-20 md:pt-6">
+          <h1 className="text-xl font-bold tracking-[0.3em] text-white">NIPPON</h1>
+          <p className="mt-0.5 text-xs tracking-[0.4em] text-[#888888]">TOYOTA</p>
+          <div className="mt-4 h-px bg-white/[0.08]" />
         </div>
-        <div className="mx-6 h-px bg-white/[0.08]" />
 
         <nav className="mt-6 px-3">
           {items.map((item) => {
